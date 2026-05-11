@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NHPL RESTAURANTS - Unified Management</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <i class="ph-fill ph-fork-knife"></i>
+            <span>NHPL RESTO</span>
+          </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <p class="nav-label">Operations</p>
+          <a href="#" class="nav-item active" data-view="live-orders">
+            <i class="ph ph-lightning"></i>
+            <span>Live Orders</span>
+          </a>
+          <a href="#" class="nav-item" data-view="reservations">
+            <i class="ph ph-table"></i>
+            <span>Tables & Res</span>
+          </a>
+          <a href="#" class="nav-item" data-view="kitchen">
+            <i class="ph ph-cooking-pot"></i>
+            <span>Kitchen Queue</span>
+          </a>
+          <a href="#" class="nav-item" data-view="dispatch">
+            <i class="ph ph-moped"></i>
+            <span>Dispatch</span>
+          </a>
+          
+          <p class="nav-label mt-2">Management</p>
+          <a href="#" class="nav-item" data-view="menu">
+            <i class="ph ph-book-open"></i>
+            <span>Menu & Items</span>
+          </a>
+          <a href="#" class="nav-item" data-view="inventory">
+            <i class="ph ph-package"></i>
+            <span>Inventory</span>
+          </a>
+          <a href="#" class="nav-item" data-view="reports">
+            <i class="ph ph-chart-bar"></i>
+            <span>Analytics</span>
+          </a>
+          <a href="#" class="nav-item" data-view="settings">
+            <i class="ph ph-sliders"></i>
+            <span>Settings</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-profile">
+            <img src="https://i.pravatar.cc/150?img=47" alt="User">
+            <div class="user-info">
+              <span class="user-name">Marco V.</span>
+              <span class="user-role">Head of Ops</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="main-wrapper">
+        <!-- Topbar -->
+        <header class="topbar">
+          <div class="search-bar">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" placeholder="Search orders, tables, menu items...">
+            <div class="search-shortcut">⌘K</div>
+          </div>
+          
+          <div class="topbar-actions">
+            <div class="notification-wrapper">
+              <button class="icon-btn" id="notif-btn">
+                <i class="ph ph-bell"></i>
+                <span class="badge" id="notif-badge">0</span>
+              </button>
+              <div class="notif-dropdown glass-panel" id="notif-dropdown">
+                <div class="notif-header">
+                  <h4>Notifications</h4>
+                  <button class="text-btn" id="clear-notifs">Clear All</button>
+                </div>
+                <div class="notif-list" id="notif-list"></div>
+                <div class="quick-replies" style="padding: 1rem; border-top: 1px solid var(--border-color); background: var(--bg-app);">
+                  <p style="font-size: 0.7rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">QUICK REPLIES</p>
+                  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                    <button class="folio-btn" onclick="addNotification('Reply Sent', 'Your table is ready.', 'info')">Table Ready</button>
+                    <button class="folio-btn" onclick="addNotification('Reply Sent', 'Delayed by 10 mins.', 'warning')">Delayed</button>
+                    <button class="folio-btn" onclick="addNotification('Reply Sent', 'Reservation confirmed.', 'success')">Confirmed</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="primary-btn" id="new-order-btn">
+              <i class="ph ph-plus"></i>
+              New Order
+            </button>
+          </div>
+        </header>
+
+        <!-- Dynamic Content Area -->
+        <main class="content-area" id="content-area">
+          
+          <!-- View: Live Orders -->
+          <div class="view-section active" id="view-live-orders">
+            <div class="page-header">
+              <div>
+                <h2>Live Order Management</h2>
+                <p>Tracking active Dine-in, Takeaway, and Delivery orders.</p>
+              </div>
+              <div class="filter-tabs">
+                <span class="tab active" data-filter="all">All Orders</span>
+                <span class="tab" data-filter="dine-in">Dine-in</span>
+                <span class="tab" data-filter="takeaway">Takeaway</span>
+              </div>
+            </div>
+
+            <div class="orders-grid" id="live-orders-container">
+              <!-- JS injected order cards -->
+            </div>
+          </div>
+
+          <!-- View: Reservations & Tables -->
+          <div class="view-section" id="view-reservations">
+            <div class="page-header">
+              <div>
+                <h2>Table Map & Reservations</h2>
+                <p>Real-time seating management and upcoming bookings.</p>
+              </div>
+              <div style="display: flex; gap: 0.75rem;">
+                <button class="action-btn" id="add-table-btn"><i class="ph ph-plus"></i> Add Table</button>
+                <button class="primary-btn" id="add-res-btn"><i class="ph ph-calendar"></i> Add Reservation</button>
+              </div>
+            </div>
+
+            <div class="dashboard-split">
+              <div class="dashboard-left">
+                <div class="glass-panel main-panel">
+                  <div class="panel-header">
+                    <h3>Floor Plan</h3>
+                    <div class="room-map-legend">
+                      <span class="legend-item"><i class="dot available"></i> Free</span>
+                      <span class="legend-item"><i class="dot occupied"></i> Seated</span>
+                      <span class="legend-item"><i class="dot reserved"></i> Reserved</span>
+                      <span class="legend-item"><i class="dot dirty"></i> Dirty</span>
+                    </div>
+                  </div>
+                  <div class="room-grid" id="table-grid">
+                    <!-- JS injected table map -->
+                  </div>
+                </div>
+              </div>
+              <div class="dashboard-right">
+                <div class="glass-panel side-panel" style="margin-bottom: 1rem;">
+                  <div class="panel-header">
+                    <h3>Waitlist</h3>
+                    <button class="text-btn" id="add-waitlist-btn">+ Add</button>
+                  </div>
+                  <div class="res-list" id="waitlist-container" style="max-height: 200px; overflow-y: auto;">
+                    <!-- JS injected waitlist -->
+                  </div>
+                </div>
+
+                <div class="glass-panel side-panel">
+                  <div class="panel-header">
+                    <h3>Upcoming Reservations</h3>
+                  </div>
+                  <div class="res-list" id="upcoming-res-list" style="max-height: 300px; overflow-y: auto;">
+                    <!-- JS injected reservations -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Kitchen Queue -->
+          <div class="view-section" id="view-kitchen">
+            <div class="page-header">
+              <div>
+                <h2>Kitchen Display System</h2>
+                <p>Live ticket queue for preparation stations.</p>
+              </div>
+              <div class="kds-stats">
+                <div class="station-tabs" id="kds-station-tabs">
+                  <span class="station-tab active" data-station="all">All Stations</span>
+                  <span class="station-tab" data-station="grill">Grill</span>
+                  <span class="station-tab" data-station="cold">Cold</span>
+                  <span class="station-tab" data-station="bar">Bar</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="kds-grid" id="kitchen-tickets">
+              <!-- JS injected kitchen tickets -->
+            </div>
+          </div>
+
+          <!-- View: Dispatch -->
+          <div class="view-section" id="view-dispatch">
+            <div class="page-header">
+              <div>
+                <h2>Delivery Dispatch</h2>
+                <p>Assigning riders and tracking active deliveries.</p>
+              </div>
+            </div>
+
+            <div class="dashboard-split">
+              <div class="dashboard-left">
+                <div class="glass-panel">
+                  <div class="panel-header">
+                    <h3>Active Deliveries</h3>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="modern-table">
+                      <thead>
+                        <tr>
+                          <th>Order #</th>
+                          <th>Destination</th>
+                          <th>Status</th>
+                          <th>Rider</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="dispatch-tbody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="glass-panel side-panel">
+                <div class="panel-header">
+                  <h3>Rider Status</h3>
+                </div>
+                <div class="rider-list" id="rider-list"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Menu Management -->
+          <div class="view-section" id="view-menu">
+            <div class="page-header">
+              <div>
+                <h2>Menu & Pricing</h2>
+                <p>Update items, availability, and daily specials.</p>
+              </div>
+              <button class="primary-btn" onclick="showMenuModal()"><i class="ph ph-plus"></i> Add Item</button>
+            </div>
+            <div class="glass-panel">
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="menu-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Inventory -->
+          <div class="view-section" id="view-inventory">
+            <div class="page-header">
+              <div>
+                <h2>Kitchen Inventory</h2>
+                <p>Track essential ingredients and supply levels.</p>
+              </div>
+              <button class="primary-btn" onclick="showInventoryModal()"><i class="ph ph-plus"></i> Add Stock Item</button>
+            </div>
+            <div class="stats-grid" id="inventory-grid"></div>
+          </div>
+
+          <!-- View: Analytics -->
+          <div class="view-section" id="view-reports">
+            <div class="page-header">
+              <div>
+                <h2>Performance Analytics</h2>
+                <p>Revenue trends, average prep times, and channel split.</p>
+              </div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon arrivals"><i class="ph ph-currency-inr"></i></div>
+                <div class="stat-info">
+                  <p>Daily Revenue</p>
+                  <h3>₹84,200</h3>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon occupied"><i class="ph ph-clock"></i></div>
+                <div class="stat-info">
+                  <p>Avg. Prep Time</p>
+                  <h3>18 mins</h3>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon departures"><i class="ph ph-moped"></i></div>
+                <div class="stat-info">
+                  <p>Delivery Share</p>
+                  <h3>42%</h3>
+                </div>
+              </div>
+            </div>
+            
+            <div class="glass-panel mt-2">
+                <h3>Top Selling Dishes</h3>
+                <div class="table-responsive mt-1">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Dish Name</th>
+                                <th>Orders</th>
+                                <th>Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analytics-top-items">
+                            <tr><td>#1</td><td>Truffle Pasta</td><td>142</td><td class="text-success">+12%</td></tr>
+                            <tr><td>#2</td><td>Wagyu Burger</td><td>118</td><td class="text-success">+8%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+          </div>
+
+          <!-- View: Settings -->
+          <div class="view-section" id="view-settings">
+            <div class="page-header">
+              <h2>Restaurant Configuration</h2>
+            </div>
+            <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+              <div class="glass-panel">
+                <h3>General Profile</h3>
+                <form class="modern-form mt-1">
+                  <div class="form-group">
+                    <label>Restaurant Name</label>
+                    <input type="text" value="NHPL Signature Kitchen">
+                  </div>
+                  <div class="form-group">
+                    <label>Contact Number</label>
+                    <input type="text" value="+91 99887 76655">
+                  </div>
+                  <div class="form-group">
+                    <label>Address</label>
+                    <textarea style="width:100%; height:80px; padding:0.75rem; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-app); font-family:inherit;">12th Floor, NHPL Tower, Ranchi</textarea>
+                  </div>
+                  <button type="button" class="primary-btn">Save Changes</button>
+                </form>
+              </div>
+              <div class="glass-panel">
+                  <h3>Branding & Media</h3>
+                  <div class="form-group">
+                      <label>Cover Image</label>
+                      <div style="height: 180px; background: var(--bg-app); border: 2px dashed var(--border-color); border-radius: 16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
+                          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=600" alt="Resto" style="width:100%; height:100%; object-fit:cover;">
+                      </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="order-modal">
+      <div class="modal-content glass-panel" style="width: 600px;">
+        <div class="modal-header">
+          <h3 id="modal-order-title">New Order</h3>
+          <button class="close-modal"><i class="ph ph-x"></i></button>
+        </div>
+        <div id="order-step-1" class="order-step active">
+          <div class="modal-body">
+            <form class="modern-form" id="order-form">
+              <div class="form-group">
+                <label>Customer Name</label>
+                <input type="text" id="order-customer" placeholder="Guest Name">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="primary-btn" id="next-to-menu">Select Items</button>
+          </div>
+        </div>
+        <div id="order-step-2" class="order-step">
+          <div class="modal-body">
+            <div class="menu-items-mini-grid" id="modal-menu-grid"></div>
+          </div>
+          <div class="modal-footer">
+            <button class="primary-btn" id="finalize-order">Finalize Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="assign-modal">
+        <div class="modal-content glass-panel" style="width: 400px;">
+            <div class="modal-header">
+                <h3>Assign Rider</h3>
+                <button class="close-modal" onclick="closeModals()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body" id="assign-body"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="menu-item-modal">
+        <div class="modal-content glass-panel" style="width: 450px;">
+            <div class="modal-header">
+                <h3 id="menu-modal-title">Menu Item</h3>
+                <button class="close-modal" onclick="closeModals()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="menu-item-form" class="modern-form">
+                    <input type="hidden" id="menu-item-id">
+                    <div class="form-group"><label>Name</label><input type="text" id="menu-item-name"></div>
+                    <div class="form-group"><label>Price</label><input type="number" id="menu-item-price"></div>
+                    <div class="form-group"><label>Category</label><input type="text" id="menu-item-cat"></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="primary-btn" id="save-menu-item">Save Item</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="inventory-modal">
+        <div class="modal-content glass-panel" style="width: 400px;">
+            <div class="modal-header">
+                <h3 id="inv-modal-title">Inventory</h3>
+                <button class="close-modal" onclick="closeModals()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="inventory-form" class="modern-form">
+                    <input type="hidden" id="inv-item-id">
+                    <div class="form-group"><label>Item Name</label><input type="text" id="inv-item-name"></div>
+                    <div class="form-group"><label>Stock Level</label><input type="number" id="inv-item-stock"></div>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="primary-btn" id="save-inv-item">Save Changes</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="folio-modal">
+      <div class="modal-content glass-panel" style="width: 450px;">
+        <div class="modal-header">
+          <h3 id="folio-title">Table Detail</h3>
+          <button class="close-modal"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body" id="folio-content"></div>
+        <div class="modal-footer" id="folio-footer"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

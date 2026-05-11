@@ -1,0 +1,8 @@
+{
+  "name": "nhpl-prototype-root",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npx concurrently \"npm run dev --prefix app-user-next\" \"npm run dev --prefix app-hotel\" \"npm run dev --prefix app-restaurant\" \"npm run dev --prefix app-driver\"",
+    "install-all": "npm install --prefix app-user-next && npm install --prefix app-hotel && npm install --prefix app-restaurant && npm install --prefix app-driver"
+  }
+}

@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NHPL HOTELS - Front Desk & Hotel Profile</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons for premium modern icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <i class="ph-fill ph-buildings"></i>
+            <span>NHPL HOTELS</span>
+          </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <p class="nav-label">Main Menu</p>
+          <a href="#" class="nav-item active" data-view="front-desk">
+            <i class="ph ph-desktop"></i>
+            <span>Front Desk</span>
+          </a>
+          <a href="#" class="nav-item" data-view="bookings">
+            <i class="ph ph-calendar-check"></i>
+            <span>Bookings</span>
+          </a>
+          <a href="#" class="nav-item" data-view="rooms">
+            <i class="ph ph-door"></i>
+            <span>Rooms & Inventory</span>
+          </a>
+          <a href="#" class="nav-item" data-view="guests">
+            <i class="ph ph-users"></i>
+            <span>Guests</span>
+          </a>
+          <a href="#" class="nav-item" data-view="tasks">
+            <i class="ph ph-clipboard-text"></i>
+            <span>Tasks & Requests</span>
+          </a>
+          
+          <p class="nav-label mt-2">Management</p>
+          <a href="#" class="nav-item" data-view="hotel-profile">
+            <i class="ph ph-storefront"></i>
+            <span>Hotel Profile</span>
+          </a>
+          <a href="#" class="nav-item" data-view="reports">
+            <i class="ph ph-chart-line-up"></i>
+            <span>Reports</span>
+          </a>
+          <a href="#" class="nav-item" data-view="settings">
+            <i class="ph ph-gear"></i>
+            <span>Settings</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-profile">
+            <img src="https://i.pravatar.cc/150?img=11" alt="User">
+            <div class="user-info">
+              <span class="user-name">Eleanor M.</span>
+              <span class="user-role">Front Desk Mgr</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="main-wrapper">
+        <!-- Topbar -->
+        <header class="topbar">
+          <div class="search-bar">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" placeholder="Search bookings, guests, rooms...">
+            <div class="search-shortcut">⌘K</div>
+          </div>
+          
+          <div class="topbar-actions">
+            <div class="notification-wrapper">
+              <button class="icon-btn" id="notif-btn">
+                <i class="ph ph-bell"></i>
+                <span class="badge" id="notif-badge">3</span>
+              </button>
+              <div class="notif-dropdown glass-panel" id="notif-dropdown">
+                <div class="notif-header">
+                  <h4>Notifications</h4>
+                  <button class="text-btn" id="clear-notifs">Clear All</button>
+                </div>
+                <div class="notif-list" id="notif-list">
+                  <!-- Notifications will be injected here -->
+                </div>
+              </div>
+            </div>
+            <button class="primary-btn new-booking-btn">
+              <i class="ph ph-plus"></i>
+              New Booking
+            </button>
+          </div>
+        </header>
+
+        <!-- Dynamic Content Area -->
+        <main class="content-area" id="content-area">
+          
+          <!-- View: Front Desk -->
+          <div class="view-section active" id="view-front-desk">
+            <div class="page-header">
+              <div>
+                <h2>Front Desk Dashboard</h2>
+                <p>Welcome back! Here's today's overview.</p>
+              </div>
+              <div class="date-picker-mock">
+                <i class="ph ph-calendar"></i>
+                <span>Today, Oct 24</span>
+                <i class="ph ph-caret-down"></i>
+              </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon arrivals"><i class="ph ph-sign-in"></i></div>
+                <div class="stat-info">
+                  <p>Arrivals</p>
+                  <h3>24 <span>/ 30</span></h3>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon departures"><i class="ph ph-sign-out"></i></div>
+                <div class="stat-info">
+                  <p>Departures</p>
+                  <h3>12 <span>/ 15</span></h3>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon occupied"><i class="ph ph-bed"></i></div>
+                <div class="stat-info">
+                  <p>Occupancy</p>
+                  <h3>86%</h3>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon requests"><i class="ph ph-bell-ringing"></i></div>
+                <div class="stat-info">
+                  <p>Active Requests</p>
+                  <h3>8</h3>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Dashboard Split -->
+            <div class="dashboard-split">
+              <div class="dashboard-left">
+                <!-- Live Activity / Room Map -->
+                <div class="glass-panel main-panel" style="margin-bottom: 1.5rem;">
+                  <div class="panel-header">
+                    <h3>Property Room Map</h3>
+                    <div class="room-map-legend">
+                      <span class="legend-item"><i class="dot available"></i> Available</span>
+                      <span class="legend-item"><i class="dot occupied"></i> Occupied</span>
+                      <span class="legend-item"><i class="dot dirty"></i> Cleaning</span>
+                    </div>
+                  </div>
+                  <div class="room-grid" id="room-grid">
+                    <!-- JS injected room map -->
+                  </div>
+                </div>
+
+                <!-- Live Activity / Arrivals -->
+                <div class="glass-panel main-panel">
+                  <div class="panel-header">
+                    <h3>Today's Arrivals</h3>
+                    <a href="#" class="view-all">View All</a>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="modern-table">
+                      <thead>
+                        <tr>
+                          <th>Guest</th>
+                          <th>Room Type</th>
+                          <th>Status</th>
+                          <th>ETA</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="arrivals-tbody">
+                        <!-- JS injected arrivals -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Side Panel: Room Status Map or Quick Tasks -->
+              <div class="glass-panel side-panel">
+                <div class="panel-header">
+                  <h3>Quick Tasks</h3>
+                </div>
+                <ul class="task-list">
+                  <li class="task-item urgent">
+                    <div class="task-icon"><i class="ph ph-broom"></i></div>
+                    <div class="task-details">
+                      <h4>Clean Room 402</h4>
+                      <p>Requested 10m ago</p>
+                    </div>
+                    <button class="action-btn">Assign</button>
+                  </li>
+                  <li class="task-item warning">
+                    <div class="task-icon"><i class="ph ph-wrench"></i></div>
+                    <div class="task-details">
+                      <h4>AC Repair Room 210</h4>
+                      <p>SLA: 30 mins left</p>
+                    </div>
+                    <button class="action-btn">View</button>
+                  </li>
+                  <li class="task-item">
+                    <div class="task-icon"><i class="ph ph-tray"></i></div>
+                    <div class="task-details">
+                      <h4>Room Service 505</h4>
+                      <p>Preparing in kitchen</p>
+                    </div>
+                    <button class="action-btn">Track</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Bookings -->
+          <div class="view-section" id="view-bookings">
+            <div class="page-header">
+              <div>
+                <h2>Bookings Management</h2>
+                <p>View and manage all current, future, and past guest reservations.</p>
+              </div>
+              <div class="topbar-actions">
+                <button class="icon-btn"><i class="ph ph-funnel"></i></button>
+                <button class="primary-btn" id="open-booking-modal">
+                  <i class="ph ph-plus"></i> New Booking
+                </button>
+              </div>
+            </div>
+
+            <div class="glass-panel">
+              <div class="panel-header">
+                <h3>Reservation List</h3>
+                <div class="filter-tabs" id="booking-filters">
+                  <span class="tab active" data-filter="all">All</span>
+                  <span class="tab" data-filter="current">Current Stay</span>
+                  <span class="tab" data-filter="upcoming">Upcoming</span>
+                  <span class="tab" data-filter="past">Past</span>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead>
+                    <tr>
+                      <th>Booking ID</th>
+                      <th>Guest</th>
+                      <th>Room Type</th>
+                      <th>Stay Dates</th>
+                      <th>Status</th>
+                      <th>Amount</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bookings-tbody">
+                    <!-- JS injected bookings -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Hotel Profile -->
+          <div class="view-section" id="view-hotel-profile">
+            <div class="page-header">
+              <div>
+                <h2>Hotel Profile Setup</h2>
+                <p>Manage your property details, policies, and amenities.</p>
+              </div>
+              <button class="primary-btn">Save Changes</button>
+            </div>
+
+            <div class="profile-layout">
+              <div class="glass-panel profile-main">
+                <h3>General Information</h3>
+                <form class="modern-form">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Legal Business Name</label>
+                      <input type="text" placeholder="e.g. NHPL Enterprises Pvt. Ltd.">
+                    </div>
+                    <div class="form-group">
+                      <label>Display Hotel Name</label>
+                      <input type="text" placeholder="e.g. NHPL Grand Hotel">
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Star Rating</label>
+                      <select>
+                        <option value="" disabled selected>Select Rating</option>
+                        <option>5 Stars</option>
+                        <option>4 Stars</option>
+                        <option>3 Stars</option>
+                        <option>Boutique / Unrated</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Property Type</label>
+                      <select>
+                        <option value="" disabled selected>Select Type</option>
+                        <option>Luxury Resort</option>
+                        <option>Business Hotel</option>
+                        <option>Boutique</option>
+                        <option>Homestay</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Description</label>
+                    <textarea rows="3" placeholder="Provide a brief description of the hotel..."></textarea>
+                  </div>
+                </form>
+
+                <h3 class="mt-2">Contact & Legal</h3>
+                <form class="modern-form">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>General Manager Name</label>
+                      <input type="text" placeholder="Manager's Full Name">
+                    </div>
+                    <div class="form-group">
+                      <label>Contact Phone</label>
+                      <input type="tel" placeholder="+91 XXXXX XXXXX">
+                    </div>
+                    <div class="form-group">
+                      <label>Contact Email</label>
+                      <input type="email" placeholder="contact@nhpl-hotel.com">
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>GSTIN / Tax ID</label>
+                      <input type="text" placeholder="e.g. 22AAAAA0000A1Z5">
+                    </div>
+                    <div class="form-group">
+                      <label>Business Registration No.</label>
+                      <input type="text" placeholder="e.g. U74999DL2021PTC...">
+                    </div>
+                  </div>
+                </form>
+
+                <h3 class="mt-2">Location</h3>
+                <form class="modern-form">
+                  <div class="form-group">
+                    <label>Address Line 1</label>
+                    <input type="text" placeholder="Street Address, Area">
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>City</label>
+                      <input type="text" placeholder="e.g. Mumbai">
+                    </div>
+                    <div class="form-group">
+                      <label>State</label>
+                      <input type="text" placeholder="e.g. Maharashtra">
+                    </div>
+                    <div class="form-group">
+                      <label>PIN / ZIP Code</label>
+                      <input type="text" placeholder="e.g. 400001">
+                    </div>
+                  </div>
+                </form>
+
+                <h3 class="mt-2">Operations & Policies</h3>
+                <form class="modern-form">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Standard Check-in</label>
+                      <input type="time" value="14:00">
+                    </div>
+                    <div class="form-group">
+                      <label>Standard Check-out</label>
+                      <input type="time" value="11:00">
+                    </div>
+                    <div class="form-group">
+                      <label>Cancellation Policy</label>
+                      <select>
+                        <option>Flexible (24h)</option>
+                        <option>Moderate (3 Days)</option>
+                        <option>Strict (7 Days)</option>
+                        <option>Non-Refundable</option>
+                      </select>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div class="glass-panel profile-side">
+                <h3>Property Images</h3>
+                <div class="image-upload-area">
+                  <i class="ph ph-image"></i>
+                  <p>Drag & drop or <span>browse</span></p>
+                </div>
+                <div class="image-gallery">
+                  <!-- Empty placeholders for gallery -->
+                  <div class="img-thumb" style="background-color: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: var(--text-muted);"><i class="ph ph-plus"></i></div>
+                  <div class="img-thumb" style="background-color: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: var(--text-muted);"><i class="ph ph-plus"></i></div>
+                </div>
+
+                <h3 class="mt-2">Core Amenities</h3>
+                <div class="amenities-grid">
+                  <label class="checkbox-label"><input type="checkbox"> Free Wi-Fi</label>
+                  <label class="checkbox-label"><input type="checkbox"> Pool</label>
+                  <label class="checkbox-label"><input type="checkbox"> Spa</label>
+                  <label class="checkbox-label"><input type="checkbox"> Gym / Fitness</label>
+                  <label class="checkbox-label"><input type="checkbox"> Restaurant</label>
+                  <label class="checkbox-label"><input type="checkbox"> Bar / Lounge</label>
+                  <label class="checkbox-label"><input type="checkbox"> Room Service</label>
+                  <label class="checkbox-label"><input type="checkbox"> Valet Parking</label>
+                  <label class="checkbox-label"><input type="checkbox"> Airport Shuttle</label>
+                  <label class="checkbox-label"><input type="checkbox"> Pet Friendly</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Rooms & Inventory -->
+          <div class="view-section" id="view-rooms">
+            <div class="page-header">
+              <div>
+                <h2>Rooms & Inventory</h2>
+                <p>Manage room availability, categories, and assigned room resources.</p>
+              </div>
+              <div class="topbar-actions">
+                <button class="icon-btn"><i class="ph ph-funnel"></i></button>
+                <button class="primary-btn"><i class="ph ph-plus"></i> Add Room</button>
+              </div>
+            </div>
+
+            <div class="glass-panel">
+              <div class="panel-header">
+                <h3>Property Inventory</h3>
+                <div class="room-stats" style="display: flex; gap: 1.5rem;">
+                  <span class="legend-item"><i class="dot available"></i> 8 Available</span>
+                  <span class="legend-item"><i class="dot occupied"></i> 4 Occupied</span>
+                  <span class="legend-item"><i class="dot dirty"></i> 3 Cleaning</span>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead>
+                    <tr>
+                      <th>Room No.</th>
+                      <th>Category</th>
+                      <th>Current Status</th>
+                      <th>Assigned Resources</th>
+                      <th>Inventory Level</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rooms-tbody">
+                    <!-- JS injected rooms -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Resources Subdivision -->
+            <div class="dashboard-split" style="margin-top: 1.5rem;">
+              <div class="glass-panel main-panel">
+                <div class="panel-header">
+                  <h3>Global Resources Inventory</h3>
+                  <button class="text-btn"><i class="ph ph-arrow-counter-clockwise"></i> Refresh</button>
+                </div>
+                <div class="resource-inventory-grid" id="resource-inventory-grid">
+                  <!-- JS injected resources -->
+                </div>
+              </div>
+
+              <div class="glass-panel side-panel">
+                <div class="panel-header">
+                  <h3>Add New Resource</h3>
+                </div>
+                <form class="modern-form" id="add-resource-form">
+                  <div class="form-group">
+                    <label>Resource Type</label>
+                    <input type="text" id="res-name" placeholder="e.g. Bath Towels">
+                  </div>
+                  <div class="form-group">
+                    <label>Category</label>
+                    <select id="res-cat">
+                      <option>Linens</option>
+                      <option>Toiletries</option>
+                      <option>F&B / Mini Bar</option>
+                      <option>Electronics</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Initial Quantity</label>
+                    <input type="number" id="res-qty" value="100">
+                  </div>
+                  <button type="submit" class="primary-btn" style="width: 100%;">Add to Inventory</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Guests -->
+          <div class="view-section" id="view-guests">
+            <div class="page-header">
+              <div>
+                <h2>In-House Guests</h2>
+                <p>View and manage all guests currently staying at the property.</p>
+              </div>
+              <div class="topbar-actions">
+                <button class="icon-btn"><i class="ph ph-funnel"></i></button>
+                <button class="primary-btn"><i class="ph ph-file-csv"></i> Export List</button>
+              </div>
+            </div>
+
+            <div class="glass-panel">
+              <div class="panel-header">
+                <h3>Guest List</h3>
+                <div class="search-bar" style="width: 250px; background: var(--bg-hover);">
+                  <i class="ph ph-magnifying-glass"></i>
+                  <input type="text" placeholder="Search guests..." style="background: transparent; border: none; padding: 0.5rem; color: var(--text-primary);">
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead>
+                    <tr>
+                      <th>Guest</th>
+                      <th>Room</th>
+                      <th>Room Type</th>
+                      <th>Check-in</th>
+                      <th>Check-out</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="guests-tbody">
+                    <!-- JS injected guests -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Tasks & SLA -->
+          <div class="view-section" id="view-tasks">
+            <div class="page-header">
+              <div>
+                <h2>Tasks & SLA Management</h2>
+                <p>Track service requests and operational tasks with real-time SLA monitoring.</p>
+              </div>
+              <div class="topbar-actions">
+                <button class="icon-btn"><i class="ph ph-funnel"></i></button>
+                <button class="primary-btn"><i class="ph ph-plus"></i> Create Task</button>
+              </div>
+            </div>
+
+            <div class="glass-panel">
+              <div class="panel-header">
+                <h3>Active Service Requests</h3>
+                <div class="filter-tabs">
+                  <span class="tab active">All</span>
+                  <span class="tab">Housekeeping</span>
+                  <span class="tab">Maintenance</span>
+                  <span class="tab">F&B</span>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead>
+                    <tr>
+                      <th>Task ID</th>
+                      <th>Room</th>
+                      <th>Category</th>
+                      <th>Issue / Request</th>
+                      <th>Priority</th>
+                      <th>SLA Time</th>
+                      <th>Assignee</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tasks-tbody">
+                    <!-- JS injected tasks -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Reports -->
+          <div class="view-section" id="view-reports">
+            <div class="page-header">
+              <div>
+                <h2>Revenue & Analytics</h2>
+                <p>Performance overview, booking history, and financial reporting.</p>
+              </div>
+              <div class="topbar-actions">
+                <div class="date-picker-mock">
+                  <i class="ph ph-calendar"></i>
+                  <span>Last 30 Days</span>
+                  <i class="ph ph-caret-down"></i>
+                </div>
+                <button class="primary-btn" id="open-export-modal">
+                  <i class="ph ph-export"></i> Export Reports
+                </button>
+              </div>
+            </div>
+
+            <!-- Revenue Dashboard -->
+            <div class="stats-grid" style="margin-bottom: 1.5rem;">
+              <div class="stat-card">
+                <div class="stat-icon arrivals" style="background: rgba(var(--status-success-rgb), 0.1); color: var(--status-success);">
+                  <i class="ph ph-currency-inr"></i>
+                </div>
+                <div class="stat-info">
+                  <p>Total Revenue</p>
+                  <h3 id="report-total-rev">₹4,52,400</h3>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon departures"><i class="ph ph-trend-up"></i></div>
+                <div class="stat-info">
+                  <p>Avg. Daily Rate</p>
+                  <h3>₹8,200</h3>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon occupied"><i class="ph ph-chart-pie"></i></div>
+                <div class="stat-info">
+                  <p>RevPAR</p>
+                  <h3>₹6,450</h3>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon requests"><i class="ph ph-users-three"></i></div>
+                <div class="stat-info">
+                  <p>New Registrations</p>
+                  <h3 id="report-new-regs">128</h3>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon arrivals" style="background: rgba(var(--accent-primary-rgb), 0.1); color: var(--accent-primary);">
+                  <i class="ph ph-hand-coins"></i>
+                </div>
+                <div class="stat-info">
+                  <p>Offline Bookings</p>
+                  <h3 id="report-offline-count">42</h3>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-panel">
+              <div class="panel-header">
+                <h3>Past Bookings & Folios</h3>
+                <div class="search-bar" style="width: 250px; background: var(--bg-hover);">
+                  <i class="ph ph-magnifying-glass"></i>
+                  <input type="text" placeholder="Search past bills...">
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead>
+                    <tr>
+                      <th>Booking ID</th>
+                      <th>Guest Name</th>
+                      <th>Stay Dates</th>
+                      <th>Room</th>
+                      <th>Total Bill</th>
+                      <th>Payment</th>
+                      <th>Folio</th>
+                    </tr>
+                  </thead>
+                  <tbody id="past-bookings-tbody">
+                    <!-- JS injected past bookings -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- View: Settings -->
+          <div class="view-section" id="view-settings">
+            <div class="page-header">
+              <div>
+                <h2>Global Settings</h2>
+                <p>Configure system-wide discounts, property details, and operational rules.</p>
+              </div>
+              <button class="primary-btn" id="save-settings-btn">Save Settings</button>
+            </div>
+
+            <div class="profile-layout">
+              <div class="glass-panel profile-main">
+                <h3>Discount Configuration</h3>
+                <form class="modern-form">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Discount Option 1 (%)</label>
+                      <input type="number" id="settings-discount-1" value="15">
+                    </div>
+                    <div class="form-group">
+                      <label>Discount Option 2 (%)</label>
+                      <input type="number" id="settings-discount-2" value="20">
+                    </div>
+                  </div>
+                </form>
+
+                <h3 class="mt-2">Property Details (Footer Info)</h3>
+                <form class="modern-form">
+                  <div class="form-group">
+                    <label>Hotel Name</label>
+                    <input type="text" id="settings-hotel-name" value="NHPL Grand Hotel">
+                  </div>
+                  <div class="form-group">
+                    <label>Contact Email</label>
+                    <input type="email" id="settings-contact-email" value="contact@nhpl-hotel.com">
+                  </div>
+                  <div class="form-group">
+                    <label>Support Phone</label>
+                    <input type="text" id="settings-support-phone" value="+91 12345 67890">
+                  </div>
+                </form>
+
+                <h3 class="mt-2">User Profile (Sidebar Info)</h3>
+                <form class="modern-form">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>User Name</label>
+                      <input type="text" id="settings-user-name" value="Eleanor M.">
+                    </div>
+                    <div class="form-group">
+                      <label>User Role</label>
+                      <input type="text" id="settings-user-role" value="Front Desk Mgr">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Avatar URL</label>
+                    <input type="text" id="settings-user-avatar" value="https://i.pravatar.cc/150?img=11">
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- Modal: Update Task Status -->
+    <div class="modal-overlay" id="status-modal">
+      <div class="modal-content glass-panel">
+        <div class="modal-header">
+          <h3>Update Task Status</h3>
+          <button class="close-modal" id="close-modal"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p id="modal-task-id" class="text-muted mb-1">Task #T-1024</p>
+          <h4 id="modal-task-title" class="mb-2">Extra Towels & Pillows</h4>
+          
+          <label class="form-label">Select New Status</label>
+          <div class="status-options">
+            <label class="status-option">
+              <input type="radio" name="task-status" value="pending" checked>
+              <div class="option-content">
+                <i class="ph ph-clock"></i>
+                <span>Pending</span>
+              </div>
+            </label>
+            <label class="status-option">
+              <input type="radio" name="task-status" value="in-progress">
+              <div class="option-content">
+                <i class="ph ph-arrows-counter-clockwise"></i>
+                <span>In Progress</span>
+              </div>
+            </label>
+            <label class="status-option">
+              <input type="radio" name="task-status" value="completed">
+              <div class="option-content">
+                <i class="ph ph-check-circle"></i>
+                <span>Completed</span>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="action-btn" id="cancel-status">Cancel</button>
+          <button class="primary-btn" id="save-status">Save Status</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Manage Arrival -->
+    <div class="modal-overlay" id="manage-arrival-modal">
+      <div class="modal-content glass-panel">
+        <div class="modal-header">
+          <h3>Manage Arrival</h3>
+          <button class="close-modal" id="close-manage-modal"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p id="manage-guest-name" class="text-primary mb-1" style="font-weight: 600; font-size: 1.1rem;"></p>
+          <p id="manage-room-type" class="text-muted mb-2"></p>
+          
+          <label class="form-label">Select Action</label>
+          <div class="status-options">
+            <label class="status-option">
+              <input type="radio" name="arrival-action" value="check-in" checked>
+              <div class="option-content">
+                <i class="ph ph-door-open"></i>
+                <span>Standard Check In</span>
+              </div>
+            </label>
+            <label class="status-option">
+              <input type="radio" name="arrival-action" value="early-check-in">
+              <div class="option-content">
+                <i class="ph ph-clock-afternoon"></i>
+                <span>Early Check-in</span>
+              </div>
+            </label>
+            <label class="status-option">
+              <input type="radio" name="arrival-action" value="cancel">
+              <div class="option-content">
+                <i class="ph ph-prohibit"></i>
+                <span>Cancel Reservation</span>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="action-btn" id="cancel-manage">Close</button>
+          <button class="primary-btn" id="confirm-manage">Confirm Action</button>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- Modal: New Booking -->
+    <div class="modal-overlay" id="booking-modal">
+      <div class="modal-content glass-panel" style="width: 500px;">
+        <div class="modal-header">
+          <h3>Create New Booking</h3>
+          <button class="close-modal" id="close-booking-modal"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+          <form class="modern-form" id="booking-form">
+            <div class="form-group">
+              <label>Guest Full Name</label>
+              <input type="text" id="book-name" placeholder="e.g. Robert Downy">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Room Type</label>
+                <select id="book-room-type">
+                  <option value="Standard King" data-price="4500">Standard King (₹4,500)</option>
+                  <option value="Deluxe Suite" data-price="12400">Deluxe Suite (₹12,400)</option>
+                  <option value="Ocean View" data-price="18200">Ocean View (₹18,200)</option>
+                  <option value="Presidential" data-price="45000">Presidential (₹45,000)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>No. of Guests</label>
+                <input type="number" id="book-guests" value="1" min="1">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Rate Type</label>
+                <select id="book-rate-type">
+                  <option value="default">Default Rate</option>
+                  <option value="discount1">15% Off</option>
+                  <option value="discount2">20% Off</option>
+                  <option value="negotiated">Negotiated Rate</option>
+                </select>
+              </div>
+              <div class="form-group" id="custom-rate-group" style="display: none;">
+                <label>Custom Rate (₹)</label>
+                <input type="number" id="book-custom-rate" placeholder="e.g. 5000">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Check-in Date</label>
+                <input type="date" id="book-checkin">
+              </div>
+              <div class="form-group">
+                <label>Check-out Date</label>
+                <input type="date" id="book-checkout">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="book-email" placeholder="guest@example.com">
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="book-phone" placeholder="+91 XXXXX XXXXX">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Government ID Number (Passport/Aadhar/DL)</label>
+              <input type="text" id="book-govid" placeholder="e.g. ABCDE1234F">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="action-btn" id="cancel-booking">Cancel</button>
+          <button class="primary-btn" id="submit-booking">Confirm Booking</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="create-task-modal">
+      <div class="modal-content glass-panel" style="width: 450px;">
+        <div class="modal-header">
+          <h3>Create New Task</h3>
+          <button class="close-modal" id="close-create-modal"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+          <form class="modern-form" id="create-task-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Room No.</label>
+                <input type="text" id="task-room" placeholder="e.g. 302">
+              </div>
+              <div class="form-group">
+                <label>Category</label>
+                <select id="task-category">
+                  <option>Housekeeping</option>
+                  <option>Maintenance</option>
+                  <option>F&B</option>
+                  <option>Concierge</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Issue / Request</label>
+              <textarea id="task-issue" rows="2" placeholder="Describe the request..."></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Priority</label>
+                <select id="task-priority">
+                  <option>Low</option>
+                  <option selected>Medium</option>
+                  <option>High</option>
+                  <option>Urgent</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Assignee</label>
+                <input type="text" id="task-assignee" placeholder="e.g. Maria S.">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="action-btn" id="cancel-create">Cancel</button>
+          <button class="primary-btn" id="submit-task">Create Task</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Export Reports -->
+    <div class="modal-overlay" id="export-modal">
+      <div class="modal-content glass-panel" style="width: 400px;">
+        <div class="modal-header">
+          <h3>Export Reports & Folios</h3>
+          <button class="close-modal" id="close-export-modal"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2 text-muted" style="font-size: 0.85rem;">Select your preferred format and data range for export.</p>
+          <form class="modern-form" id="export-form">
+            <div class="form-group">
+              <label>Report Type</label>
+              <select id="export-type">
+                <option value="revenue">Revenue Analytics</option>
+                <option value="bookings">Past Bookings Summary</option>
+                <option value="folio">Guest Folios (Bills)</option>
+                <option value="inventory">Inventory Logs</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Select Format</label>
+              <div class="status-options" style="grid-template-columns: 1fr 1fr 1fr;">
+                <label class="status-option">
+                  <input type="radio" name="export-format" value="excel" checked>
+                  <div class="option-content">
+                    <i class="ph ph-file-xls"></i>
+                    <span>Excel</span>
+                  </div>
+                </label>
+                <label class="status-option">
+                  <input type="radio" name="export-format" value="word">
+                  <div class="option-content">
+                    <i class="ph ph-file-doc"></i>
+                    <span>Word</span>
+                  </div>
+                </label>
+                <label class="status-option">
+                  <input type="radio" name="export-format" value="pdf">
+                  <div class="option-content">
+                    <i class="ph ph-file-pdf"></i>
+                    <span>PDF</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Date Range</label>
+              <select id="export-range">
+                <option>Today</option>
+                <option>Last 7 Days</option>
+                <option selected>Last 30 Days</option>
+                <option>Current Financial Year</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="action-btn" id="cancel-export">Cancel</button>
+          <button class="primary-btn" id="confirm-export" style="background: var(--status-success);">
+            <i class="ph ph-download-simple"></i> Download Report
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -16,15 +16,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/user-profile/route.js"
     ],
-    "/api/restaurant-orders/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/restaurant-orders/route.js"
-    ],
     "/api/hotel-bookings/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/hotel-bookings/route.js"
+    ],
+    "/api/restaurant-orders/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/restaurant-orders/route.js"
     ]
   }
 }

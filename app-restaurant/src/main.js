@@ -37,7 +37,6 @@ let inventoryItems = [
 
 let notifications = [];
 let currentCart = [];
-let currentTableId = null;
 
 // Navigation
 document.querySelectorAll('.nav-item').forEach(item => {
@@ -181,59 +180,22 @@ window.showTableDetail = function(id) {
   const content = document.getElementById('folio-content');
   const footer = document.getElementById('folio-footer');
   
-  const order = orders.find(o => o.table === table.id);
-  
   document.getElementById('folio-title').innerText = `Table ${table.num} - ${table.status}`;
   
-  if (order) {
-    const orderItems = order.items.reduce((acc, curr) => {
-        acc[curr] = (acc[curr] || 0) + 1;
-        return acc;
-    }, {});
-
-    content.innerHTML = `
-      <div style="padding-bottom:1rem; border-bottom:1px solid var(--border-color); margin-bottom:1rem;">
-        <p><strong>Guest:</strong> ${order.customer || 'N/A'}</p>
-        <p><strong>Capacity:</strong> ${table.seats} Seats</p>
-      </div>
-      <div class="active-cart-section">
-        <h4 style="margin-bottom:0.75rem; font-size:0.9rem; display:flex; align-items:center; gap:0.5rem;">
-            <i class="ph ph-shopping-cart"></i> Current Order
-        </h4>
-        <div style="max-height: 200px; overflow-y: auto; margin-bottom:1rem;">
-            ${Object.entries(orderItems).map(([name, qty]) => `
-                <div style="display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid var(--bg-app); font-size:0.85rem;">
-                    <span>${name}</span>
-                    <span style="font-weight:700;">x${qty}</span>
-                </div>
-            `).join('')}
-        </div>
-        <button class="folio-btn" onclick="showOrderModal('dine-in', '${table.id}')" style="background:var(--bg-app); border:1px dashed var(--border-color); color:var(--text-main);">
-            <i class="ph ph-plus"></i> Add More Items
-        </button>
-        <button class="folio-btn" onclick="updateTableStatus('${id}', 'dirty')" style="margin-top:0.5rem; color:#991b1b;">
-            <i class="ph ph-trash"></i> Clear Table
-        </button>
-      </div>
-    `;
-  } else {
-    content.innerHTML = `
-      <div style="padding-bottom:1rem; border-bottom:1px solid var(--border-color); margin-bottom:1rem;">
-        <p><strong>Capacity:</strong> ${table.seats} Seats</p>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <button class="folio-btn" onclick="showOrderModal('dine-in', '${table.id}')"><i class="ph ph-book-open"></i> Full Menu</button>
-        <button class="folio-btn" onclick="updateTableStatus('${id}', 'dirty')">Clear Table</button>
-      </div>
-    `;
-  }
-  
-  footer.innerHTML = `
-    <div style="display:flex; justify-content:space-between; width:100%; align-items:center; gap:1rem;">
-      ${order ? `<button class="secondary-btn" style="flex:1; justify-content:center; padding: 0.75rem;" onclick="showTableBill('${table.id}')"><i class="ph ph-receipt"></i> View Bill</button>` : '<div></div>'}
-      <button class="primary-btn" style="flex:1; justify-content:center; padding: 0.75rem;" onclick="closeModals()">Close</button>
+  content.innerHTML = `
+    <div style="padding-bottom:1rem; border-bottom:1px solid var(--border-color); margin-bottom:1rem;">
+      <p><strong>Guest:</strong> ${table.guest || 'N/A'}</p>
+      <p><strong>Capacity:</strong> ${table.seats} Seats</p>
     </div>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <button class="folio-btn" onclick="openMiniMenu('${id}')"><i class="ph ph-plus"></i> Add Item (Water/Soft Drinks)</button>
+      <button class="folio-btn" onclick="showOrderModal('dine-in', '${table.id}')"><i class="ph ph-book-open"></i> Full Menu</button>
+      <button class="folio-btn" onclick="updateTableStatus('${id}', 'dirty')">Clear Table</button>
+    </div>
+    <div id="mini-menu-container" style="display:none; margin-top:1rem; padding-top:1rem; border-top:1px dashed var(--border-color);"></div>
   `;
+  
+  footer.innerHTML = `<button class="primary-btn" onclick="closeModals()">Close</button>`;
   modal.classList.add('active');
 }
 
@@ -281,38 +243,12 @@ if (newOrderBtn) {
 }
 
 window.showOrderModal = function(type = 'dine-in', tableId = null) {
-    closeModals();
     const modal = document.getElementById('order-modal');
     const grid = document.getElementById('modal-menu-grid');
-    currentTableId = tableId;
+    currentCart = [];
     
-    // Check for existing order to load into cart
-    const existingOrder = tableId ? orders.find(o => o.table === tableId) : null;
-    if (existingOrder) {
-        currentCart = existingOrder.items.reduce((acc, itemName) => {
-            const existing = acc.find(i => i.name === itemName);
-            if (existing) {
-                existing.qty++;
-            } else {
-                const menuItem = menuItems.find(m => m.name === itemName);
-                acc.push({ name: itemName, price: menuItem ? menuItem.price : 0, qty: 1 });
-            }
-            return acc;
-        }, []);
-        document.getElementById('order-customer').value = existingOrder.customer;
-        // Move to menu selection directly if order exists
-        document.getElementById('order-step-1').classList.remove('active');
-        document.getElementById('order-step-2').classList.add('active');
-    } else {
-        currentCart = [];
-        document.getElementById('order-form').reset();
-        document.getElementById('order-step-1').classList.add('active');
-        document.getElementById('order-step-2').classList.remove('active');
-    }
-    
-    document.getElementById('order-step-3').classList.remove('active');
-    
-    renderCart();
+    document.getElementById('order-step-1').classList.add('active');
+    document.getElementById('order-step-2').classList.remove('active');
     
     grid.innerHTML = menuItems.map(item => `
         <div class="mini-menu-card" onclick="addToCart('${item.name}', ${item.price})">
@@ -329,184 +265,14 @@ document.getElementById('next-to-menu')?.addEventListener('click', () => {
     document.getElementById('order-step-2').classList.add('active');
 });
 
-document.getElementById('finalize-order-direct')?.addEventListener('click', () => {
-    if (currentCart.length === 0) {
-        addNotification('Empty Cart', 'Please add some items first.', 'warning');
-        return;
-    }
-    const customer = document.getElementById('order-customer').value || 'Guest';
-    const total = currentCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    
-    // Check if we're updating an existing order or creating a new one
-    const tableId = currentTableId; // Need to track this
-    const existingIndex = orders.findIndex(o => o.table === tableId);
-
-    if (existingIndex > -1) {
-        orders[existingIndex].items = currentCart.map(c => Array(c.qty).fill(c.name)).flat();
-        orders[existingIndex].total = total;
-        addNotification('Order Updated', `Table ${orders[existingIndex].table} items updated.`, 'success');
-    } else {
-        const newId = (1000 + orders.length + 1).toString();
-        orders.push({
-            id: newId,
-            customer,
-            items: currentCart.map(c => Array(c.qty).fill(c.name)).flat(),
-            total,
-            status: 'preparing',
-            type: 'dine-in',
-            table: tableId,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        });
-        
-        // Update table status
-        const table = tables.find(t => t.id === tableId);
-        if (table) {
-            table.status = 'occupied';
-            table.guest = customer;
-        }
-        
-        addNotification('Order Placed', `Order #${newId} has been confirmed.`, 'success');
-    }
-    
-    closeModals();
-    refreshAllViews();
-    addNotification('Order Placed', `Order #${newId} has been confirmed.`, 'success');
-});
-
-document.getElementById('back-to-menu')?.addEventListener('click', () => {
-    document.getElementById('order-step-3').classList.remove('active');
-    document.getElementById('order-step-2').classList.add('active');
-});
-
 window.addToCart = function(name, price) {
-    const existing = currentCart.find(item => item.name === name);
-    if (existing) {
-        existing.qty++;
-    } else {
-        currentCart.push({ name, price, qty: 1 });
-    }
-    renderCart();
-    addNotification('Added', `${name} added to cart`, 'info');
-}
-
-window.removeFromCart = function(name) {
-    const index = currentCart.findIndex(item => item.name === name);
-    if (index > -1) {
-        if (currentCart[index].qty > 1) {
-            currentCart[index].qty--;
-        } else {
-            currentCart.splice(index, 1);
-        }
-    }
-    renderCart();
-}
-
-function renderCart() {
-    const container = document.getElementById('modal-cart-items');
-    const totalEl = document.getElementById('modal-cart-total');
-    if (!container || !totalEl) return;
-
-    if (currentCart.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:2rem;">Cart is empty</div>`;
-        totalEl.innerText = '₹0';
-        return;
-    }
-
-    container.innerHTML = currentCart.map(item => `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; background:white; padding:0.5rem; border-radius:8px;">
-            <div style="flex:1;">
-                <div style="font-weight:600; font-size:0.85rem;">${item.name}</div>
-                <div style="font-size:0.75rem; color:var(--text-muted);">₹${item.price} x ${item.qty}</div>
-            </div>
-            <div style="display:flex; align-items:center; gap:0.5rem;">
-                <button class="icon-btn" style="padding:0.25rem;" onclick="removeFromCart('${item.name}')"><i class="ph ph-minus"></i></button>
-                <span style="font-weight:700;">${item.qty}</span>
-                <button class="icon-btn" style="padding:0.25rem;" onclick="addToCart('${item.name}', ${item.price})"><i class="ph ph-plus"></i></button>
-            </div>
-        </div>
-    `).join('');
-
-    const total = currentCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    totalEl.innerText = `₹${total}`;
-
-    const nextToBillBtn = document.getElementById('next-to-bill');
-    if (nextToBillBtn) {
-        if (currentCart.length === 0) {
-            nextToBillBtn.style.opacity = '0.5';
-            nextToBillBtn.style.cursor = 'not-allowed';
-        } else {
-            nextToBillBtn.style.opacity = '1';
-            nextToBillBtn.style.cursor = 'pointer';
-        }
-    }
-}
-
-function renderBillPreview() {
-    const container = document.getElementById('bill-preview-content');
-    if (!container) return;
-
-    const customer = document.getElementById('order-customer').value || 'Guest';
-    const subtotal = currentCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const tax = Math.round(subtotal * 0.05); // 5% GST
-    const total = subtotal + tax;
-
-    container.innerHTML = `
-        <div style="text-align:center; border-bottom:2px dashed var(--border-color); padding-bottom:1rem; margin-bottom:1rem;">
-            <h2 style="font-family:'Outfit'; color:var(--accent-secondary);">NHPL RESTAURANT</h2>
-            <p style="font-size:0.8rem; color:var(--text-muted);">Unified Management System • Ranchi</p>
-        </div>
-        <div style="margin-bottom:1.5rem;">
-            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.5rem;">
-                <span><strong>Customer:</strong> ${customer}</span>
-                <span><strong>Date:</strong> ${new Date().toLocaleDateString()}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
-                <span><strong>Order ID:</strong> #${1000 + orders.length + 1}</span>
-                <span><strong>Time:</strong> ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
-            </div>
-        </div>
-        <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem;">
-            <thead style="border-bottom:1px solid var(--border-color);">
-                <tr>
-                    <th style="text-align:left; padding:0.5rem 0; font-size:0.8rem;">ITEM</th>
-                    <th style="text-align:center; padding:0.5rem 0; font-size:0.8rem;">QTY</th>
-                    <th style="text-align:right; padding:0.5rem 0; font-size:0.8rem;">TOTAL</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${currentCart.map(item => `
-                    <tr>
-                        <td style="padding:0.75rem 0; font-size:0.9rem;">${item.name}</td>
-                        <td style="text-align:center; padding:0.75rem 0; font-size:0.9rem;">${item.qty}</td>
-                        <td style="text-align:right; padding:0.75rem 0; font-size:0.9rem;">₹${item.price * item.qty}</td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-        <div style="border-top:1px solid var(--border-color); padding-top:1rem;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.9rem;">
-                <span>Subtotal</span>
-                <span>₹${subtotal}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.9rem;">
-                <span>GST (5%)</span>
-                <span>₹${tax}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.2rem; color:var(--accent-secondary); margin-top:0.5rem; padding-top:0.5rem; border-top:2px solid var(--accent-secondary);">
-                <span>GRAND TOTAL</span>
-                <span>₹${total}</span>
-            </div>
-        </div>
-        <div style="text-align:center; margin-top:2rem; font-size:0.75rem; color:var(--text-muted);">
-            <p>Thank you for dining with us!</p>
-            <p>www.nhpl-restos.com</p>
-        </div>
-    `;
+    currentCart.push({ name, price });
+    addNotification('Item Added', `${name} added to cart`, 'info');
 }
 
 document.getElementById('finalize-order')?.addEventListener('click', () => {
     const customer = document.getElementById('order-customer').value || 'Guest';
-    const total = currentCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const total = currentCart.reduce((sum, item) => sum + item.price, 0);
     const newId = (1000 + orders.length + 1).toString();
     
     orders.push({
@@ -588,69 +354,10 @@ window.updateOrderStatus = function(id, status) {
     if (order) { order.status = status; refreshAllViews(); }
 }
 
-window.showTableBill = function(tableId) {
-    closeModals();
-    const order = orders.find(o => o.table === tableId);
-    if (!order) {
-        addNotification('No Bill', 'No active order found for this table.', 'info');
-        return;
-    }
-
-    // Prepare currentCart for the bill preview
-    currentCart = order.items.map(itemName => {
-        const menuItem = menuItems.find(m => m.name === itemName);
-        return {
-            name: itemName,
-            price: menuItem ? menuItem.price : 0,
-            qty: 1 // Assuming 1 for now as the simple order logic doesn't track quantity
-        };
-    });
-
-    const modal = document.getElementById('order-modal');
-    document.getElementById('order-step-1').classList.remove('active');
-    document.getElementById('order-step-2').classList.remove('active');
-    document.getElementById('order-step-3').classList.add('active');
-    document.getElementById('order-customer').value = order.customer;
-    
-    renderBillPreview();
-    modal.classList.add('active');
-}
-
 window.addNotification = function(title, message, type) {
     notifications.unshift({ title, message, type });
     const badge = document.getElementById('notif-badge');
     if (badge) badge.innerText = notifications.length;
-}
-
-// Add Table Functionality
-const addTableBtn = document.getElementById('add-table-btn');
-if (addTableBtn) {
-    addTableBtn.addEventListener('click', () => {
-        document.getElementById('add-table-modal').classList.add('active');
-    });
-}
-
-const saveTableBtn = document.getElementById('save-new-table');
-if (saveTableBtn) {
-    saveTableBtn.addEventListener('click', () => {
-        const num = document.getElementById('new-table-num').value;
-        const seats = document.getElementById('new-table-seats').value;
-        
-        if (num && seats) {
-            const newId = `T${tables.length + 1}`;
-            tables.push({
-                id: newId,
-                num: num,
-                seats: parseInt(seats),
-                status: 'available'
-            });
-            
-            closeModals();
-            renderTableGrid();
-            document.getElementById('add-table-form').reset();
-            addNotification('Table Added', `Table ${num} has been added to the floor plan.`, 'success');
-        }
-    });
 }
 
 // Initial

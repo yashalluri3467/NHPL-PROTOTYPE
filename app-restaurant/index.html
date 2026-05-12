@@ -378,13 +378,11 @@
 
     <!-- Modals -->
     <div class="modal-overlay" id="order-modal">
-      <div class="modal-content glass-panel" style="width: 800px;">
+      <div class="modal-content glass-panel" style="width: 600px;">
         <div class="modal-header">
           <h3 id="modal-order-title">New Order</h3>
           <button class="close-modal"><i class="ph ph-x"></i></button>
         </div>
-        
-        <!-- Step 1: Customer Details -->
         <div id="order-step-1" class="order-step active">
           <div class="modal-body">
             <form class="modern-form" id="order-form">
@@ -398,42 +396,12 @@
             <button class="primary-btn" id="next-to-menu">Select Items</button>
           </div>
         </div>
-
-        <!-- Step 2: Menu & Cart -->
         <div id="order-step-2" class="order-step">
-          <div class="modal-body" style="display: grid; grid-template-columns: 1fr 280px; gap: 1.5rem; height: 500px;">
-            <div style="overflow-y: auto; padding-right: 0.5rem;">
-              <h4 style="margin-bottom: 1rem;">Full Menu</h4>
-              <div class="menu-items-mini-grid" id="modal-menu-grid"></div>
-            </div>
-            <div style="background: var(--bg-app); border-radius: 12px; padding: 1rem; display: flex; flex-direction: column;">
-              <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                <i class="ph ph-shopping-cart"></i> Cart
-              </h4>
-              <div id="modal-cart-items" style="flex: 1; overflow-y: auto;">
-                <!-- JS injected cart items -->
-              </div>
-              <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 1rem;">
-                <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 1rem;">
-                  <span>Subtotal</span>
-                  <span id="modal-cart-total">₹0</span>
-                </div>
-                <button class="primary-btn" id="finalize-order-direct" style="width: 100%; justify-content: center;">Finalize Order</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 3: Bill Preview -->
-        <div id="order-step-3" class="order-step">
           <div class="modal-body">
-            <div id="bill-preview-content" class="glass-panel" style="background: white; padding: 2rem; border-radius: 12px;">
-              <!-- JS injected bill -->
-            </div>
+            <div class="menu-items-mini-grid" id="modal-menu-grid"></div>
           </div>
-          <div class="modal-footer" style="display: flex; gap: 1rem;">
-            <button class="secondary-btn" id="back-to-menu" style="flex: 1; justify-content: center;">Edit Order</button>
-            <button class="primary-btn" id="finalize-order" style="flex: 1; justify-content: center;">Finalize & Print</button>
+          <div class="modal-footer">
+            <button class="primary-btn" id="finalize-order">Finalize Order</button>
           </div>
         </div>
       </div>
@@ -492,30 +460,6 @@
         </div>
         <div class="modal-body" id="folio-content"></div>
         <div class="modal-footer" id="folio-footer"></div>
-      </div>
-    </div>
-
-    <div class="modal-overlay" id="add-table-modal">
-      <div class="modal-content glass-panel" style="width: 400px;">
-        <div class="modal-header">
-          <h3>Add New Table</h3>
-          <button class="close-modal" onclick="closeModals()"><i class="ph ph-x"></i></button>
-        </div>
-        <div class="modal-body">
-          <form id="add-table-form" class="modern-form">
-            <div class="form-group">
-              <label>Table Number</label>
-              <input type="text" id="new-table-num" placeholder="e.g. 7" required>
-            </div>
-            <div class="form-group">
-              <label>Capacity (Seats)</label>
-              <input type="number" id="new-table-seats" placeholder="e.g. 4" required>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button class="primary-btn" id="save-new-table" style="width: 100%; justify-content: center;">Add Table</button>
-        </div>
       </div>
     </div>
 

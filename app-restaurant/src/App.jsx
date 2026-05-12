@@ -10,28 +10,13 @@ const INITIAL_MENU_DATA = [
   { id: 6, name: 'Old Fashioned Burger', category: 'Main Course', price: 750, desc: 'Angus beef patty, cheddar, caramelized onions, and house sauce.', diet: 'non-veg', prepTime: '15 min' },
 ];
 
-const INITIAL_TABLES_DATA = [
-  { id: 1, number: '1', seats: 2, status: 'seated', occupant: 'Karan J.' },
-  { id: 2, number: '2', seats: 2, status: 'free', occupant: null },
-  { id: 3, number: '3', seats: 4, status: 'reserved', occupant: 'Mehta Party' },
-  { id: 4, number: '4', seats: 4, status: 'seated', occupant: 'Aryan S.' },
-  { id: 5, number: '5', seats: 6, status: 'free', occupant: null },
-  { id: 6, number: '6', seats: 2, status: 'free', occupant: null },
-];
-
 function App() {
-  const [activeView, setActiveView] = useState('tables'); // Default to tables view as per user request
+  const [activeView, setActiveView] = useState('menu');
   const [activeMode, setActiveMode] = useState('dine-in');
   const [menu, setMenu] = useState(INITIAL_MENU_DATA);
-  const [tables, setTables] = useState(INITIAL_TABLES_DATA);
-  const [showAddTableModal, setShowAddTableModal] = useState(false);
 
   const [newItem, setNewItem] = useState({
     name: '', category: 'Main Course', price: '', desc: '', diet: 'veg', prepTime: ''
-  });
-
-  const [newTable, setNewTable] = useState({
-    number: '', seats: ''
   });
 
   const handleAddItem = (e) => {
@@ -44,21 +29,6 @@ function App() {
     };
     setMenu([item, ...menu]);
     setNewItem({ name: '', category: 'Main Course', price: '', desc: '', diet: 'veg', prepTime: '' });
-  };
-
-  const handleAddTable = (e) => {
-    e.preventDefault();
-    if (!newTable.number || !newTable.seats) return;
-    const table = {
-      id: Date.now(),
-      number: newTable.number,
-      seats: parseInt(newTable.seats),
-      status: 'free',
-      occupant: null
-    };
-    setTables([...tables, table]);
-    setNewTable({ number: '', seats: '' });
-    setShowAddTableModal(false);
   };
 
 
@@ -82,7 +52,7 @@ function App() {
         </div>
         <div className={`nav-item ${activeView === 'tables' ? 'active' : ''}`} onClick={() => setActiveView('tables')}>
           <i className="ph ph-grid-four"></i>
-          <span>Tables & Res</span>
+          <span>Table Map</span>
         </div>
         
         <p className="nav-label mt-2">Production</p>
@@ -124,91 +94,6 @@ function App() {
           <i className="ph ph-plus"></i> New Order
         </button>
       </div>
-    </div>
-  );
-
-  const TablesView = () => (
-    <div className="view-section active">
-      <div className="page-header">
-        <div>
-          <h2>Table Map & Reservations</h2>
-          <p>Real-time seating management and upcoming bookings.</p>
-        </div>
-        <div style={{display: 'flex', gap: '1rem'}}>
-          <button className="secondary-btn" onClick={() => setShowAddTableModal(true)}>
-            <i className="ph ph-plus"></i> Add Table
-          </button>
-          <button className="primary-btn">
-            <i className="ph ph-calendar-plus"></i> Add Reservation
-          </button>
-        </div>
-      </div>
-
-      <div className="glass-panel" style={{padding: '1.5rem'}}>
-        <div className="floor-plan-header">
-          <h3>Floor Plan</h3>
-          <div className="status-legend">
-            <div className="legend-item"><span className="legend-dot"></span> Free</div>
-            <div className="legend-item"><span className="legend-dot seated"></span> Seated</div>
-            <div className="legend-item"><span className="legend-dot reserved"></span> Reserved</div>
-            <div className="legend-item"><span className="legend-dot dirty"></span> Dirty</div>
-          </div>
-        </div>
-        
-        <div className="tables-grid">
-          {tables.map(table => (
-            <div key={table.id} className={`table-card glass-panel ${table.status}`}>
-              <div className="table-number">{table.number}</div>
-              <div className="table-seats">{table.seats} Seats</div>
-              {table.occupant && (
-                <div style={{marginTop: '0.5rem', fontWeight: '600', color: 'var(--status-danger)', fontSize: '0.85rem'}}>
-                  {table.occupant}
-                </div>
-              )}
-              <div className="table-status-label">{table.status}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const AddTableModal = () => (
-    <div className="modal-overlay">
-      <div className="modal-content glass-panel">
-        <div className="modal-header">
-          <h3>Add New Table</h3>
-          <button className="modal-close" onClick={() => setShowAddTableModal(false)}>
-            <i className="ph ph-x"></i>
-          </button>
-        </div>
-        <form onSubmit={handleAddTable}>
-          <div className="form-group">
-            <label>Table Number</label>
-            <input 
-              type="text" 
-              placeholder="e.g. 7 or B1" 
-              value={newTable.number} 
-              onChange={e => setNewTable({...newTable, number: e.target.value})}
-              autoFocus
-              required 
-            />
-          </div>
-          <div className="form-group">
-            <label>Number of Seats</label>
-            <input 
-              type="number" 
-              placeholder="e.g. 4" 
-              value={newTable.seats} 
-              onChange={e => setNewTable({...newTable, seats: e.target.value})}
-              required 
-            />
-          </div>
-          <div style={{display: 'flex', gap: '1rem', marginTop: '2rem'}}>
-            <button type="button" className="secondary-btn" style={{flex: 1, justifyContent: 'center'}} onClick={() => setShowAddTableModal(false)}>Cancel</button>
-            <button type="submit" className="primary-btn" style={{flex: 1, justifyContent: 'center'}}>Add Table</button>
-          </div>
-        </form>
     </div>
   );
 
@@ -354,10 +239,9 @@ function App() {
       <div className="main-content">
         <Topbar />
         <div className="view-container">
-          {activeView === 'tables' && <TablesView />}
           {activeView === 'menu' && <MenuView />}
           {activeView === 'menu-mgmt' && <MenuMgmtView />}
-          {activeView !== 'menu' && activeView !== 'menu-mgmt' && activeView !== 'tables' && (
+          {activeView !== 'menu' && activeView !== 'menu-mgmt' && (
             <div className="glass-panel" style={{padding: '4rem', textAlign: 'center'}}>
               <i className="ph ph-hammer" style={{fontSize: '3rem', color: 'var(--accent-primary)', marginBottom: '1rem'}}></i>
               <h3>{activeView.charAt(0).toUpperCase() + activeView.slice(1)} View</h3>
@@ -366,7 +250,6 @@ function App() {
           )}
         </div>
       </div>
-      {showAddTableModal && <AddTableModal />}
     </div>
   );
 }

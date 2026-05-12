@@ -18,6 +18,13 @@ const generateHotels = (city, count) => {
   const names = ["Grand", "Royal", "Emerald", "Sapphire", "Plaza", "Residency", "Heritage", "Classic", "Park", "View", "Orchid", "Elite", "Crystal", "Golden", "Silver", "Imperial", "Dynasty", "Serene", "Heights", "Signature"];
   const areas = ["Main Road", "Station Area", "Bistupur", "Sakchi", "Saraidhela", "Bank More", "Tower Chowk", "Kutchery Road", "Lalpur", "Doranda"];
   
+  const roomTemplates = [
+    { name: "Executive Suite", type: "Suite", price: 250, desc: "King bed, city view, premium lounge access." },
+    { name: "Deluxe Twin Room", type: "Room", price: 150, desc: "Two twin beds, modern amenities, high-speed WiFi." },
+    { name: "Premium King Room", type: "Room", price: 180, desc: "King bed, workstation, separate seating area." },
+    { name: "Presidential Villa", type: "Villa", price: 650, desc: "Private pool, personal butler, 3 bedrooms." }
+  ];
+
   return Array.from({ length: count }, (_, i) => ({
     id: `${city.toLowerCase()}-h-${i + 1}`,
     name: `NHPL ${names[i % names.length]} ${city}`,
@@ -25,7 +32,8 @@ const generateHotels = (city, count) => {
     city: city,
     price: `$${Math.floor(Math.random() * 200) + 80}/night`,
     rating: (Math.random() * (5 - 4.5) + 4.5).toFixed(1),
-    image: `https://images.unsplash.com/photo-${hotelImages[i % hotelImages.length]}?auto=format&fit=crop&q=80&w=800`
+    image: `https://images.unsplash.com/photo-${hotelImages[i % hotelImages.length]}?auto=format&fit=crop&q=80&w=800`,
+    rooms: roomTemplates
   }));
 };
 
@@ -33,6 +41,14 @@ const generateRestaurants = (city, count) => {
   const cuisines = ["North Indian", "Chinese", "South Indian", "Continental", "Fine Dining", "Mughlai", "Fast Food", "Italian", "Thai", "Local Jharkhandi"];
   const names = ["Spice", "Zest", "Flavor", "Kitchen", "Bistro", "Cafe", "Corner", "Boutique", "Plate", "Bite", "Clove", "Saffron", "Basil", "Aroma", "Gourmet"];
   
+  const menuTemplates = [
+    { name: "Signature Butter Chicken", price: 18.50, category: "Main Course" },
+    { name: "Pesto Pasta Premium", price: 15.00, category: "Italian" },
+    { name: "Szechuan Dragon Rolls", price: 12.00, category: "Chinese" },
+    { name: "Local Dhuska Platter", price: 10.50, category: "Local" },
+    { name: "Classic Tandoori Platter", price: 22.00, category: "Grill" }
+  ];
+
   return Array.from({ length: count }, (_, i) => ({
     id: `${city.toLowerCase()}-r-${i + 1}`,
     name: `${names[i % names.length]} of ${city}`,
@@ -40,7 +56,8 @@ const generateRestaurants = (city, count) => {
     city: city,
     rating: (Math.random() * (5 - 4) + 4).toFixed(1),
     time: `${Math.floor(Math.random() * 30) + 15} min`,
-    image: `https://images.unsplash.com/photo-${restImages[i % restImages.length]}?auto=format&fit=crop&q=80&w=800`
+    image: `https://images.unsplash.com/photo-${restImages[i % restImages.length]}?auto=format&fit=crop&q=80&w=800`,
+    menu: menuTemplates
   }));
 };
 
@@ -76,7 +93,14 @@ export const APP_DATA = {
   drivers: cities.flatMap(city => generateDrivers(city, 10)),
   locations: [
     { id: 1, name: "Netarhat", state: "Jharkhand", city: "Netarhat", desc: "Queen of Chotanagpur", image: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&q=80&w=400" },
+    { id: 101, name: "Lower Ghagri Falls", state: "Jharkhand", city: "Netarhat", desc: "A serene waterfall deep in the forest.", image: "https://images.unsplash.com/photo-1544148103-077af2696730?auto=format&fit=crop&q=80&w=400" },
+    { id: 102, name: "Magnolia Sunset Point", state: "Jharkhand", city: "Netarhat", desc: "Famous for the most beautiful sunset in Jharkhand.", image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=400" },
+    { id: 103, name: "Pine Forest", state: "Jharkhand", city: "Netarhat", desc: "Towering pine trees offering a cool breeze.", image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=400" },
+    { id: 104, name: "Upper Ghagri Falls", state: "Jharkhand", city: "Netarhat", desc: "Picturesque falls near the Netarhat school.", image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=400" },
     { id: 2, name: "Ranchi", state: "Jharkhand", city: "Ranchi", desc: "City of Waterfalls", image: "https://images.unsplash.com/photo-1595111003429-1991df639965?auto=format&fit=crop&q=80&w=400" },
+    { id: 201, name: "Hundru Falls", state: "Jharkhand", city: "Ranchi", desc: "Majestic 320ft waterfall on Subarnarekha river.", image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=400" },
+    { id: 202, name: "Patratu Valley", state: "Jharkhand", city: "Ranchi", desc: "Hairpin turns and stunning reservoir views.", image: "https://images.unsplash.com/photo-1449034446853-66c86144b0ad?auto=format&fit=crop&q=80&w=400" },
+    { id: 203, name: "Dassam Falls", state: "Jharkhand", city: "Ranchi", desc: "Tumbling falls from Kanchi river.", image: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&q=80&w=400" },
     { id: 3, name: "Hazaribagh", state: "Jharkhand", city: "Hazaribagh", desc: "The Thousand Gardens", image: "https://images.unsplash.com/photo-1621360841013-c7683c659ec6?auto=format&fit=crop&q=80&w=400" },
     { id: 4, name: "Jamshedpur", state: "Jharkhand", city: "Jamshedpur", desc: "The Steel City", image: "https://images.unsplash.com/photo-1621434316041-3827670733a4?auto=format&fit=crop&q=80&w=400" },
     { id: 5, name: "Deoghar", state: "Jharkhand", city: "Deoghar", desc: "Abode of Gods", image: "https://images.unsplash.com/photo-1605371924599-2d0365da1ae0?auto=format&fit=crop&q=80&w=400" },

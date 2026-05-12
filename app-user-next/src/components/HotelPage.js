@@ -1,34 +1,43 @@
 "use client";
 import React, { useState } from 'react';
 import { APP_DATA } from '../data';
+import HotelBookingHero from './HotelBookingHero';
 
 export default function HotelPage({ selectedCity }) {
-  const [bookingStatus, setBookingStatus] = useState(null);
+  const [bookingStatus, setBookingStatus] = useState({}); 
+  const [selectedHotel, setSelectedHotel] = useState(null);
+  const [isBooking, setIsBooking] = useState(false);
 
   const hotels = APP_DATA.hotels.filter(h => h.city === selectedCity);
 
-  const handleReserve = async (hotel) => {
-    setBookingStatus('processing');
+  const handleOpenRooms = (hotel) => {
+    setSelectedHotel(hotel);
+    setIsBooking(true);
+  };
+
+  const confirmBooking = (details) => {
+    setBookingStatus(prev => ({ ...prev, [selectedHotel.id]: 'success' }));
+    setIsBooking(false);
+    setTimeout(() => {
+      setBookingStatus(prev => ({ ...prev, [selectedHotel.id]: null }));
+      setSelectedHotel(null);
+    }, 3000);
+  };
+
+  const handleReserve = async (hotel, room) => {
+    setBookingStatus(prev => ({ ...prev, [hotel.id]: 'processing' }));
     try {
-      const response = await fetch('/api/hotel-bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: 1,
-          guest_name: "Alex Johnson",
-          room_type: hotel.name,
-          check_in: "2026-05-12",
-          check_out: "2026-05-15",
-          amount: hotel.price
-        })
-      });
-      if (response.ok) {
-        setBookingStatus('success');
-        setTimeout(() => setBookingStatus(null), 3000);
-      }
+      // Simulate API call
+      setTimeout(() => {
+        setBookingStatus(prev => ({ ...prev, [hotel.id]: 'success' }));
+        setTimeout(() => {
+          setBookingStatus(prev => ({ ...prev, [hotel.id]: null }));
+          setSelectedHotel(null);
+        }, 2000);
+      }, 1000);
     } catch (error) {
       console.error("Booking failed:", error);
-      setBookingStatus('error');
+      setBookingStatus(prev => ({ ...prev, [hotel.id]: 'error' }));
     }
   };
 
@@ -53,17 +62,22 @@ export default function HotelPage({ selectedCity }) {
         </div>
       </div>
 
-      {bookingStatus === 'success' && (
-        <div className="official-card" style={{background: '#f0fdf4', borderColor: '#16a34a', marginBottom: '24px'}}>
-          <p style={{color: '#16a34a', fontWeight: 700, textAlign: 'center'}}>Reservation Successful.</p>
-        </div>
-      )}
-
       {hotels.length > 0 ? (
         <div className="grid-3" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem'}}>
           {hotels.map((hotel) => (
             <div key={hotel.id} className="official-card" style={{padding: '0', overflow: 'hidden'}}>
-              <img src={hotel.image} alt={hotel.name} style={{width: '100%', height: '200px', objectFit: 'cover'}} />
+              <div style={{position: 'relative'}}>
+                <img src={hotel.image} alt={hotel.name} style={{width: '100%', height: '200px', objectFit: 'cover'}} />
+                <div style={{position: 'absolute', top: '12px', right: '12px', background: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: '4px'}}>
+                  <i className="ph-fill ph-star" style={{color: '#EAB308'}}></i>
+                  {hotel.rating}
+                </div>
+                {bookingStatus[hotel.id] === 'success' && (
+                  <div style={{position: 'absolute', inset: 0, background: 'rgba(22, 163, 74, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10}}>
+                    <p style={{color: 'white', fontWeight: 800}}>ROOM RESERVED</p>
+                  </div>
+                )}
+              </div>
               <div style={{padding: '1.5rem'}}>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem'}}>
                   <h3 style={{margin: 0}}>{hotel.name}</h3>
@@ -74,10 +88,9 @@ export default function HotelPage({ selectedCity }) {
                   <span style={{fontSize: '1.25rem', fontWeight: 700, color: 'var(--accent)'}}>{hotel.price}</span>
                   <button 
                     className="premium-action-btn"
-                    onClick={() => handleReserve(hotel)}
-                    disabled={bookingStatus === 'processing'}
+                    onClick={() => handleOpenRooms(hotel)}
                   >
-                    {bookingStatus === 'processing' ? 'Processing...' : 'Reserve'}
+                    Reserve Now
                   </button>
                 </div>
               </div>
@@ -88,6 +101,14 @@ export default function HotelPage({ selectedCity }) {
         <div className="official-card" style={{textAlign: 'center', padding: '4rem'}}>
           <p className="text-muted">No NHPL Signature Stays available in {selectedCity} yet. Exploring other cities?</p>
         </div>
+      )}
+
+      {isBooking && selectedHotel && (
+        <HotelBookingHero 
+          hotel={selectedHotel}
+          onClose={() => setIsBooking(false)}
+          onConfirm={confirmBooking}
+        />
       )}
     </div>
   );

@@ -3,6 +3,13 @@ import React, { useState, useEffect } from 'react';
 import TravelPage from '../components/TravelPage';
 import HotelPage from '../components/HotelPage';
 import RestaurantPage from '../components/RestaurantPage';
+import QuickActionCTA from '../components/QuickActionCTA';
+import BookingTimeline from '../components/BookingTimeline';
+import CommunicationPanel from '../components/CommunicationPanel';
+import LiveMap from '../components/LiveMap';
+import UnifiedFolio from '../components/UnifiedFolio';
+import MyBookings from '../components/MyBookings';
+import Invoices from '../components/Invoices';
 import { APP_DATA } from '../data';
 
 export default function Home() {
@@ -48,6 +55,8 @@ export default function Home() {
       case 'travel': return <TravelPage {...props} />;
       case 'hotel': return <HotelPage {...props} />;
       case 'restaurant': return <RestaurantPage {...props} />;
+      case 'bookings': return <MyBookings />;
+      case 'invoices': return <Invoices />;
       default: return <TravelPage {...props} />;
     }
   };
@@ -72,6 +81,8 @@ export default function Home() {
 
   return (
     <div className="app-container">
+      {/* Global Indicators */}
+
       {/* Official Sidebar */}
       <aside className={`sidebar ${isSidebarOpen ? '' : 'closed'}`}>
         <div className="sidebar-header">
@@ -95,9 +106,19 @@ export default function Home() {
           ))}
 
           <p className="nav-label" style={{marginTop: '2rem'}}>Personal</p>
-          <div className="nav-link">
+          <div 
+            className={`nav-link ${activeTab === 'bookings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('bookings')}
+          >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             <span>My Bookings</span>
+          </div>
+          <div 
+            className={`nav-link ${activeTab === 'invoices' ? 'active' : ''}`}
+            onClick={() => setActiveTab('invoices')}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>Invoices</span>
           </div>
         </div>
 
@@ -155,7 +176,26 @@ export default function Home() {
 
         {/* Content Area */}
         <main className="page-content">
+          <div className="suggestion-banner">
+            <span className="s-label">Smart Suggestions</span>
+            <h2 className="s-title">Based on your Netarhat interest...</h2>
+            <div className="s-chips">
+              <div className="s-chip"><i className="ph ph-car"></i> Book Driver + Guide for Naina Falls</div>
+              <div className="s-chip"><i className="ph ph-fork-knife"></i> Reserve Dinner at 8:00 PM</div>
+              <div className="s-chip"><i className="ph ph-bed"></i> Book Deluxe Room for night</div>
+            </div>
+          </div>
+
+          <QuickActionCTA />
           {renderContent()}
+
+          <div className="dashboard-grid" style={{marginTop: '3rem'}}>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '2rem'}}>
+              <BookingTimeline />
+              <LiveMap />
+            </div>
+            <CommunicationPanel />
+          </div>
         </main>
       </div>
 

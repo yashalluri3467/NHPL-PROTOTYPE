@@ -157,40 +157,135 @@
                 </div>
             </section>
 
-            <!-- View: Profile & Vehicle -->
+            <!-- View: Profile & Vehicle (Modern Dashboard) -->
             <section class="view-section" id="view-profile">
-                <div class="profile-console">
-                    <div class="profile-card card">
-                        <div class="p-header">
-                            <img src="https://i.pravatar.cc/150?img=11" alt="Driver">
-                            <div>
-                                <h3>Rajesh Khanna</h3>
-                                <p>Platinum Partner • 4.9 <i class="ph-fill ph-star"></i></p>
+                <div class="profile-dashboard">
+                    
+                    <!-- Left Column: Personal & Verification -->
+                    <div class="dash-col main-col">
+                        <div class="profile-hero card">
+                            <div class="hero-content">
+                                <div class="avatar-wrapper">
+                                    <img src="https://i.pravatar.cc/150?img=11" alt="Driver">
+                                    <div class="status-indicator online"></div>
+                                </div>
+                                <div class="hero-text">
+                                    <div class="name-row">
+                                        <h2>Rajesh Khanna</h2>
+                                        <span class="badge tier-platinum">PLATINUM</span>
+                                    </div>
+                                    <p class="text-secondary">Ranchi Division • Joining Date: Jan 2024</p>
+                                    <div class="quick-stats">
+                                        <div class="q-stat">
+                                            <i class="ph-fill ph-star text-gold"></i>
+                                            <span>4.9 Rating</span>
+                                        </div>
+                                        <div class="q-stat">
+                                            <i class="ph ph-clock"></i>
+                                            <span>850+ Hours</span>
+                                        </div>
+                                        <div class="q-stat">
+                                            <i class="ph ph-check-circle text-accent"></i>
+                                            <span>1.2k Trips</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-grid mt-2">
+                            <div class="info-card card">
+                                <h3><i class="ph ph-shield-check text-accent"></i> VERIFICATION STATUS</h3>
+                                <div class="verification-list">
+                                    <div class="v-item verified">
+                                        <i class="ph ph-identification-card"></i>
+                                        <span>Identity (Aadhar)</span>
+                                        <i class="ph ph-check-circle-fill"></i>
+                                    </div>
+                                    <div class="v-item verified">
+                                        <i class="ph ph-newspaper"></i>
+                                        <span>Driving License</span>
+                                        <i class="ph ph-check-circle-fill"></i>
+                                    </div>
+                                    <div class="v-item verified">
+                                        <i class="ph ph-article"></i>
+                                        <span>Commercial Permit</span>
+                                        <i class="ph ph-check-circle-fill"></i>
+                                    </div>
+                                    <div class="v-item pending">
+                                        <i class="ph ph-file-text"></i>
+                                        <span>Background Check</span>
+                                        <span class="status">RE-VERIFYING</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-card card">
+                                <h3><i class="ph ph-translate text-accent"></i> LANGUAGES</h3>
+                                <div class="tag-cloud">
+                                    <span class="tag">Hindi</span>
+                                    <span class="tag">English</span>
+                                    <span class="tag">Bhojpuri</span>
+                                    <span class="tag">Bengali (Basic)</span>
+                                </div>
+                                <h3 class="mt-2"><i class="ph ph-certificate text-accent"></i> SPECIALTIES</h3>
+                                <div class="tag-cloud">
+                                    <span class="tag primary">Patratu Expert</span>
+                                    <span class="tag primary">Long Distance</span>
+                                    <span class="tag primary">Corporate</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="vehicle-card card mt-1">
-                        <h4>VEHICLE STATUS</h4>
-                        <p class="text-muted">Toyota Innova Crysta • JH 01 BK 9921</p>
-                        <div class="health-metrics mt-1">
-                            <div class="metric">
-                                <label>Fuel</label>
-                                <div class="p-bar"><div class="fill" style="width: 75%"></div></div>
-                                <span>75%</span>
+                    <!-- Right Column: Vehicle & Actions -->
+                    <div class="dash-col side-col">
+                        <div class="vehicle-card card">
+                            <div class="v-header">
+                                <h3>MY VEHICLE</h3>
+                                <span class="v-status status-ok">ACTIVE</span>
                             </div>
-                            <div class="metric">
-                                <label>Tires</label>
-                                <span class="status-ok">GOOD</span>
+                            <div class="v-details">
+                                <img src="https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&q=80&w=300" alt="Innova" class="v-img">
+                                <div class="v-info">
+                                    <strong>Toyota Innova Crysta</strong>
+                                    <p class="text-secondary">JH 01 BK 9921 • White</p>
+                                </div>
                             </div>
-                            <div class="metric">
-                                <label>Next Service</label>
-                                <span>1,250 km</span>
+                            <div class="health-metrics mt-2">
+                                <div class="metric">
+                                    <label>Fuel Level</label>
+                                    <div class="p-bar"><div class="fill" style="width: 75%"></div></div>
+                                    <span>75%</span>
+                                </div>
+                                <div class="metric">
+                                    <label>Tire Health</label>
+                                    <div class="p-bar"><div class="fill" style="width: 90%"></div></div>
+                                    <span>GOOD</span>
+                                </div>
+                                <div class="metric">
+                                    <label>Oil Level</label>
+                                    <div class="p-bar"><div class="fill" style="width: 60%"></div></div>
+                                    <span>60%</span>
+                                </div>
+                            </div>
+                            <div class="next-service card mt-2">
+                                <i class="ph ph-wrench"></i>
+                                <div>
+                                    <label>NEXT SERVICE DUE</label>
+                                    <strong>1,250 km / 15 June</strong>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <button class="outline-btn danger-btn mt-2" onclick="confirmEndShift()">END SHIFT</button>
+                        <div class="action-stack mt-2">
+                            <button class="outline-btn"><i class="ph ph-gear"></i> Account Settings</button>
+                            <button class="outline-btn mt-1"><i class="ph ph-headset"></i> Support Center</button>
+                            <button class="outline-btn danger-btn mt-2" onclick="confirmEndShift()">
+                                <i class="ph ph-sign-out"></i> END SHIFT & LOGOUT
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
 

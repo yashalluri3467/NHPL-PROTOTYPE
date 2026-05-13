@@ -1,5 +1,5 @@
 {
+  "/api/restaurant-orders/route": "app/api/restaurant-orders/route.js",
   "/api/hotel-bookings/route": "app/api/hotel-bookings/route.js",
-  "/api/user-profile/route": "app/api/user-profile/route.js",
   "/page": "app/page.js"
 }

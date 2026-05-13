@@ -495,26 +495,32 @@
       </div>
     </div>
 
-    <div class="modal-overlay" id="add-table-modal">
+    <div class="modal-overlay" id="reservation-modal">
       <div class="modal-content glass-panel" style="width: 400px;">
         <div class="modal-header">
-          <h3>Add New Table</h3>
+          <h3>New Reservation</h3>
           <button class="close-modal" onclick="closeModals()"><i class="ph ph-x"></i></button>
         </div>
         <div class="modal-body">
-          <form id="add-table-form" class="modern-form">
+          <form id="reservation-form" class="modern-form">
             <div class="form-group">
-              <label>Table Number</label>
-              <input type="text" id="new-table-num" placeholder="e.g. 7" required>
+              <label>Guest Name</label>
+              <input type="text" id="res-guest-name" placeholder="e.g. Mr. Khanna" required>
             </div>
-            <div class="form-group">
-              <label>Capacity (Seats)</label>
-              <input type="number" id="new-table-seats" placeholder="e.g. 4" required>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label>Time</label>
+                <input type="time" id="res-time" required>
+              </div>
+              <div class="form-group">
+                <label>Guests</label>
+                <input type="number" id="res-guests" placeholder="2" required>
+              </div>
             </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button class="primary-btn" id="save-new-table" style="width: 100%; justify-content: center;">Add Table</button>
+          <button class="primary-btn" id="save-reservation" style="width: 100%; justify-content: center;">Confirm Booking</button>
         </div>
       </div>
     </div>

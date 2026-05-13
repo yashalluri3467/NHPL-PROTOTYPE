@@ -35,6 +35,11 @@ let inventoryItems = [
   { id: 'I3', name: 'Pasta Flour', stock: 45, unit: 'kg', lowStock: 10, icon: 'ph-grains' }
 ];
 
+let reservations = [
+  { id: '1', name: 'Singhania Party', time: '19:30', guests: 4, status: 'confirmed' },
+  { id: '2', name: 'Dr. Mehta', time: '20:15', guests: 2, status: 'confirmed' }
+];
+
 let notifications = [];
 let currentCart = [];
 let currentTableId = null;
@@ -60,31 +65,64 @@ function refreshAllViews() {
   renderDispatch();
   renderMenuManagement();
   renderInventory();
+  renderUpcomingReservations();
+}
+
+function renderUpcomingReservations() {
+  const container = document.getElementById('upcoming-res-list');
+  if (!container) return;
+  
+  if (reservations.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);"><i class="ph ph-calendar-blank" style="font-size:2rem; margin-bottom:0.5rem; display:block;"></i>No upcoming bookings</div>`;
+    return;
+  }
+
+  container.innerHTML = reservations.map(res => `
+    <div class="stat-card" style="margin-bottom:0.75rem; padding:1rem; border:1px solid var(--border-color); cursor:default;">
+      <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
+        <div style="flex:1;">
+          <strong style="display:block; font-size:0.9rem;">${res.name}</strong>
+          <span class="text-muted" style="font-size:0.75rem;"><i class="ph ph-users" style="margin-right:0.3rem;"></i>${res.guests} Guests</span>
+        </div>
+        <div style="text-align:right;">
+          <span class="status-badge ready" style="font-size:0.65rem; padding:2px 8px; margin-bottom:0.4rem; display:inline-block;">${res.time}</span>
+          <span style="display:block; font-size:0.7rem; font-weight:700; color:var(--accent-primary); text-transform:uppercase;">${res.status}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
 }
 
 function renderLiveOrders() {
   const container = document.getElementById('live-orders-container');
   if (!container) return;
-  container.innerHTML = orders.map(order => `
-    <div class="order-card" onclick="showOrderFolio('${order.id}')">
-      <div class="order-header">
-        <span class="order-number">#${order.id}</span>
-        <span class="order-type">${order.type}</span>
+  container.innerHTML = orders.map(order => {
+    const aggregatedItems = order.items.reduce((acc, curr) => {
+      acc[curr] = (acc[curr] || 0) + 1;
+      return acc;
+    }, {});
+
+    return `
+      <div class="order-card" onclick="showOrderFolio('${order.id}')">
+        <div class="order-header">
+          <span class="order-number">#${order.id}</span>
+          <span class="order-type">${order.type}</span>
+        </div>
+        <div class="order-customer">
+          <strong>${order.customer}</strong>
+          <span class="text-muted">${order.type === 'dine-in' ? order.table : order.time}</span>
+        </div>
+        <div class="order-items">
+          ${Object.entries(aggregatedItems).map(([name, qty]) => `<div class="order-item"><span>${name}</span><span>${qty}x</span></div>`).join('')}
+        </div>
+        <div class="order-footer">
+          <span class="status-badge ${order.status}">${order.status.replace('-', ' ')}</span>
+          <strong>₹${order.total}</strong>
+          ${order.source === 'Portal' ? '<span class="status-badge ready" style="background:#fdf2f2; color:#991b1b; font-size:0.6rem;">PORTAL</span>' : ''}
+        </div>
       </div>
-      <div class="order-customer">
-        <strong>${order.customer}</strong>
-        <span class="text-muted">${order.type === 'dine-in' ? order.table : order.time}</span>
-      </div>
-      <div class="order-items">
-        ${order.items.map(item => `<div class="order-item"><span>${item}</span><span>1x</span></div>`).join('')}
-      </div>
-      <div class="order-footer">
-        <span class="status-badge ${order.status}">${order.status.replace('-', ' ')}</span>
-        <strong>₹${order.total}</strong>
-        ${order.source === 'Portal' ? '<span class="status-badge ready" style="background:#fdf2f2; color:#991b1b; font-size:0.6rem;">PORTAL</span>' : ''}
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function renderTableGrid() {
@@ -103,18 +141,67 @@ function renderKitchenQueue() {
   const container = document.getElementById('kitchen-tickets');
   if (!container) return;
   const kitchenOrders = orders.filter(o => o.status === 'preparing');
-  container.innerHTML = kitchenOrders.map(order => `
-    <div class="kds-ticket">
-      <div class="ticket-header" style="display:flex; justify-content:space-between;">
-        <strong>#${order.id}</strong>
-        <span class="prep-timer">08:45</span>
+  container.innerHTML = kitchenOrders.map(order => {
+    const aggregatedItems = order.items.reduce((acc, curr) => {
+      acc[curr] = (acc[curr] || 0) + 1;
+      return acc;
+    }, {});
+
+    const itemEntries = Object.entries(aggregatedItems);
+
+    return `
+      <div class="kds-ticket" id="ticket-${order.id}">
+        <div class="ticket-header" style="display:flex; justify-content:space-between;">
+          <strong>#${order.id}</strong>
+          <span class="prep-timer">08:45</span>
+        </div>
+        <div class="ticket-items" style="flex:1; max-height: 200px; overflow-y: auto;">
+          ${itemEntries.map(([name, qty], idx) => `
+            <p class="kds-item" onclick="toggleKitchenItem('${order.id}', ${idx})" id="item-${order.id}-${idx}" style="cursor:pointer; display:flex; align-items:center; transition:0.2s;">
+              <i class="ph ph-circle kds-check-icon" style="font-size:0.9rem; margin-right:0.75rem;"></i> 
+              <span style="flex:1">${name}</span>
+              <b style="float:right">x${qty}</b>
+            </p>
+          `).join('')}
+        </div>
+        <button class="primary-btn kds-ready-btn" id="ready-btn-${order.id}" style="width:100%; margin-top:1rem; opacity: 0.5; cursor: not-allowed;" disabled onclick="updateOrderStatus('${order.id}', 'ready')">Mark Ready</button>
       </div>
-      <div class="ticket-items" style="flex:1;">
-        ${order.items.map(item => `<p><i class="ph ph-circle" style="font-size:0.7rem; margin-right:0.5rem;"></i> ${item}</p>`).join('')}
-      </div>
-      <button class="primary-btn" style="width:100%; margin-top:1rem;" onclick="updateOrderStatus('${order.id}', 'ready')">Mark Ready</button>
-    </div>
-  `).join('');
+    `;
+  }).join('');
+}
+
+window.toggleKitchenItem = function(orderId, itemIdx) {
+    const item = document.getElementById(`item-${orderId}-${itemIdx}`);
+    const icon = item.querySelector('.kds-check-icon');
+    
+    // Toggle checked state
+    if (item.classList.contains('checked')) {
+        item.classList.remove('checked');
+        item.style.opacity = '1';
+        item.style.textDecoration = 'none';
+        icon.className = 'ph ph-circle kds-check-icon';
+    } else {
+        item.classList.add('checked');
+        item.style.opacity = '0.4';
+        item.style.textDecoration = 'line-through';
+        icon.className = 'ph ph-check-circle-fill kds-check-icon';
+    }
+
+    // Check if all items in this ticket are checked
+    const ticket = document.getElementById(`ticket-${orderId}`);
+    const allItems = ticket.querySelectorAll('.kds-item');
+    const checkedItems = ticket.querySelectorAll('.kds-item.checked');
+    const readyBtn = document.getElementById(`ready-btn-${orderId}`);
+
+    if (allItems.length === checkedItems.length) {
+        readyBtn.disabled = false;
+        readyBtn.style.opacity = '1';
+        readyBtn.style.cursor = 'pointer';
+    } else {
+        readyBtn.disabled = true;
+        readyBtn.style.opacity = '0.5';
+        readyBtn.style.cursor = 'not-allowed';
+    }
 }
 
 function renderDispatch() {
@@ -181,12 +268,23 @@ window.showTableDetail = function(id) {
   const content = document.getElementById('folio-content');
   const footer = document.getElementById('folio-footer');
   
-  const order = orders.find(o => o.table === table.id);
+  const order = orders.find(o => o.table === table.id && o.status !== 'completed');
   
-  document.getElementById('folio-title').innerText = `Table ${table.num} - ${table.status}`;
+  document.getElementById('folio-title').innerText = `Table ${table.num} - ${table.status.toUpperCase()}`;
   
-  if (order) {
-    const orderItems = order.items.reduce((acc, curr) => {
+  if (table.status === 'dirty') {
+    content.innerHTML = `
+      <div style="text-align:center; padding:2rem 1rem;">
+        <div style="font-size:3rem; color: #991b1b; margin-bottom:1rem;"><i class="ph ph-broom"></i></div>
+        <h4>Table requires cleaning</h4>
+        <p class="text-muted" style="font-size:0.85rem; margin-bottom:2rem;">This table has been cleared and is awaiting sanitization before next guest.</p>
+        <button class="primary-btn" style="width:100%; justify-content:center; padding:1rem;" onclick="updateTableStatus('${id}', 'available')">
+          <i class="ph ph-check-circle"></i> Mark as Available
+        </button>
+      </div>
+    `;
+  } else if (order) {
+    const aggregatedItems = order.items.reduce((acc, curr) => {
         acc[curr] = (acc[curr] || 0) + 1;
         return acc;
     }, {});
@@ -201,19 +299,21 @@ window.showTableDetail = function(id) {
             <i class="ph ph-shopping-cart"></i> Current Order
         </h4>
         <div style="max-height: 200px; overflow-y: auto; margin-bottom:1rem;">
-            ${Object.entries(orderItems).map(([name, qty]) => `
+            ${Object.entries(aggregatedItems).map(([name, qty]) => `
                 <div style="display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid var(--bg-app); font-size:0.85rem;">
                     <span>${name}</span>
                     <span style="font-weight:700;">x${qty}</span>
                 </div>
             `).join('')}
         </div>
-        <button class="folio-btn" onclick="showOrderModal('dine-in', '${table.id}')" style="background:var(--bg-app); border:1px dashed var(--border-color); color:var(--text-main);">
-            <i class="ph ph-plus"></i> Add More Items
-        </button>
-        <button class="folio-btn" onclick="updateTableStatus('${id}', 'dirty')" style="margin-top:0.5rem; color:#991b1b;">
-            <i class="ph ph-trash"></i> Clear Table
-        </button>
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+            <button class="folio-btn" onclick="showOrderModal('dine-in', '${table.id}')" style="background:var(--bg-app); border:1px dashed var(--border-color); color:var(--text-main);">
+                <i class="ph ph-plus"></i> Add More Items
+            </button>
+            <button class="folio-btn" onclick="updateTableStatus('${id}', 'dirty')" style="color:#991b1b; background: #fee2e2; border-color: #fecaca;">
+                <i class="ph ph-trash"></i> Clear Table
+            </button>
+        </div>
       </div>
     `;
   } else {
@@ -222,15 +322,15 @@ window.showTableDetail = function(id) {
         <p><strong>Capacity:</strong> ${table.seats} Seats</p>
       </div>
       <div style="display:flex; flex-direction:column; gap:0.5rem;">
-        <button class="folio-btn" onclick="showOrderModal('dine-in', '${table.id}')"><i class="ph ph-book-open"></i> Full Menu</button>
-        <button class="folio-btn" onclick="updateTableStatus('${id}', 'dirty')">Clear Table</button>
+        <button class="folio-btn" onclick="showOrderModal('dine-in', '${table.id}')"><i class="ph ph-book-open"></i> Full Menu / New Order</button>
+        <button class="folio-btn" onclick="updateTableStatus('${id}', 'dirty')" style="color:#991b1b;">Mark as Dirty</button>
       </div>
     `;
   }
   
   footer.innerHTML = `
     <div style="display:flex; justify-content:space-between; width:100%; align-items:center; gap:1rem;">
-      ${order ? `<button class="secondary-btn" style="flex:1; justify-content:center; padding: 0.75rem;" onclick="showTableBill('${table.id}')"><i class="ph ph-receipt"></i> View Bill</button>` : '<div></div>'}
+      ${(order && table.status !== 'dirty') ? `<button class="secondary-btn" style="flex:1; justify-content:center; padding: 0.75rem;" onclick="showTableBill('${table.id}')"><i class="ph ph-receipt"></i> View Bill</button>` : '<div></div>'}
       <button class="primary-btn" style="flex:1; justify-content:center; padding: 0.75rem;" onclick="closeModals()">Close</button>
     </div>
   `;
@@ -261,12 +361,22 @@ window.showOrderFolio = function(id) {
     const modal = document.getElementById('folio-modal');
     const content = document.getElementById('folio-content');
     
+    const aggregatedItems = order.items.reduce((acc, curr) => {
+        acc[curr] = (acc[curr] || 0) + 1;
+        return acc;
+    }, {});
+
     document.getElementById('folio-title').innerText = `Order #${order.id}`;
     content.innerHTML = `
         <div class="cart-summary-mini">
             <p><strong>Customer:</strong> ${order.customer}</p>
-            <div style="margin-top:1rem;">
-                ${order.items.map(i => `<div class="cart-item-row"><span>${i}</span><span>₹...</span></div>`).join('')}
+            <div style="margin-top:1rem; max-height: 250px; overflow-y: auto; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem;">
+                ${Object.entries(aggregatedItems).map(([name, qty]) => `
+                    <div class="cart-item-row" style="display:flex; justify-content:space-between; padding: 0.5rem 0;">
+                        <span>${name}</span>
+                        <span style="font-weight:700;">x${qty}</span>
+                    </div>
+                `).join('')}
             </div>
             <div class="cart-total-line"><span>Total</span><span>₹${order.total}</span></div>
         </div>
@@ -465,24 +575,26 @@ function renderBillPreview() {
                 <span><strong>Time:</strong> ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
             </div>
         </div>
-        <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem;">
-            <thead style="border-bottom:1px solid var(--border-color);">
-                <tr>
-                    <th style="text-align:left; padding:0.5rem 0; font-size:0.8rem;">ITEM</th>
-                    <th style="text-align:center; padding:0.5rem 0; font-size:0.8rem;">QTY</th>
-                    <th style="text-align:right; padding:0.5rem 0; font-size:0.8rem;">TOTAL</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${currentCart.map(item => `
+        <div style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead style="border-bottom:1px solid var(--border-color); position: sticky; top: 0; background: white; z-index: 1;">
                     <tr>
-                        <td style="padding:0.75rem 0; font-size:0.9rem;">${item.name}</td>
-                        <td style="text-align:center; padding:0.75rem 0; font-size:0.9rem;">${item.qty}</td>
-                        <td style="text-align:right; padding:0.75rem 0; font-size:0.9rem;">₹${item.price * item.qty}</td>
+                        <th style="text-align:left; padding:0.5rem 0; font-size:0.8rem;">ITEM</th>
+                        <th style="text-align:center; padding:0.5rem 0; font-size:0.8rem;">QTY</th>
+                        <th style="text-align:right; padding:0.5rem 0; font-size:0.8rem;">TOTAL</th>
                     </tr>
-                `).join('')}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    ${currentCart.map(item => `
+                        <tr>
+                            <td style="padding:0.75rem 0; font-size:0.9rem;">${item.name}</td>
+                            <td style="text-align:center; padding:0.75rem 0; font-size:0.9rem;">${item.qty}</td>
+                            <td style="text-align:right; padding:0.75rem 0; font-size:0.9rem;">₹${item.price * item.qty}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
         <div style="border-top:1px solid var(--border-color); padding-top:1rem;">
             <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.9rem;">
                 <span>Subtotal</span>
@@ -596,13 +708,18 @@ window.showTableBill = function(tableId) {
         return;
     }
 
-    // Prepare currentCart for the bill preview
-    currentCart = order.items.map(itemName => {
+    // Prepare currentCart for the bill preview with aggregation
+    const aggregated = order.items.reduce((acc, itemName) => {
+        acc[itemName] = (acc[itemName] || 0) + 1;
+        return acc;
+    }, {});
+
+    currentCart = Object.entries(aggregated).map(([itemName, qty]) => {
         const menuItem = menuItems.find(m => m.name === itemName);
         return {
             name: itemName,
             price: menuItem ? menuItem.price : 0,
-            qty: 1 // Assuming 1 for now as the simple order logic doesn't track quantity
+            qty: qty
         };
     });
 
@@ -649,6 +766,41 @@ if (saveTableBtn) {
             renderTableGrid();
             document.getElementById('add-table-form').reset();
             addNotification('Table Added', `Table ${num} has been added to the floor plan.`, 'success');
+        }
+    });
+}
+
+// Reservation Functionality
+const addResBtn = document.getElementById('add-res-btn');
+if (addResBtn) {
+    addResBtn.addEventListener('click', () => {
+        document.getElementById('reservation-modal').classList.add('active');
+    });
+}
+
+const saveResBtn = document.getElementById('save-reservation');
+if (saveResBtn) {
+    saveResBtn.addEventListener('click', () => {
+        const name = document.getElementById('res-guest-name').value;
+        const time = document.getElementById('res-time').value;
+        const guests = document.getElementById('res-guests').value;
+        
+        if (name && time && guests) {
+            const newId = (reservations.length + 1).toString();
+            reservations.push({
+                id: newId,
+                name: name,
+                time: time,
+                guests: parseInt(guests),
+                status: 'confirmed'
+            });
+            
+            closeModals();
+            renderUpcomingReservations();
+            document.getElementById('reservation-form').reset();
+            addNotification('Reservation Confirmed', `Booking for ${name} at ${time} has been logged.`, 'success');
+        } else {
+            addNotification('Incomplete Form', 'Please fill in all reservation details.', 'warning');
         }
     });
 }

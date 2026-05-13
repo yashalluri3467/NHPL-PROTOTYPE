@@ -10,13 +10,9 @@ const INITIAL_MENU_DATA = [
   { id: 6, name: 'Old Fashioned Burger', category: 'Main Course', price: 750, desc: 'Angus beef patty, cheddar, caramelized onions, and house sauce.', diet: 'non-veg', prepTime: '15 min' },
 ];
 
-const INITIAL_TABLES_DATA = [
-  { id: 1, number: '1', seats: 2, status: 'seated', occupant: 'Karan J.' },
-  { id: 2, number: '2', seats: 2, status: 'free', occupant: null },
-  { id: 3, number: '3', seats: 4, status: 'reserved', occupant: 'Mehta Party' },
-  { id: 4, number: '4', seats: 4, status: 'seated', occupant: 'Aryan S.' },
-  { id: 5, number: '5', seats: 6, status: 'free', occupant: null },
-  { id: 6, number: '6', seats: 2, status: 'free', occupant: null },
+const INITIAL_RESERVATIONS_DATA = [
+  { id: 1, name: 'Malhotra Family', time: '19:30', guests: 4, status: 'confirmed' },
+  { id: 2, name: 'Dr. Sameer', time: '20:15', guests: 2, status: 'confirmed' },
 ];
 
 function App() {
@@ -24,7 +20,10 @@ function App() {
   const [activeMode, setActiveMode] = useState('dine-in');
   const [menu, setMenu] = useState(INITIAL_MENU_DATA);
   const [tables, setTables] = useState(INITIAL_TABLES_DATA);
+  const [reservations, setReservations] = useState(INITIAL_RESERVATIONS_DATA);
+  
   const [showAddTableModal, setShowAddTableModal] = useState(false);
+  const [showAddResModal, setShowAddResModal] = useState(false);
 
   const [newItem, setNewItem] = useState({
     name: '', category: 'Main Course', price: '', desc: '', diet: 'veg', prepTime: ''
@@ -32,6 +31,10 @@ function App() {
 
   const [newTable, setNewTable] = useState({
     number: '', seats: ''
+  });
+
+  const [newRes, setNewRes] = useState({
+    name: '', time: '', guests: ''
   });
 
   const handleAddItem = (e) => {
@@ -59,6 +62,19 @@ function App() {
     setTables([...tables, table]);
     setNewTable({ number: '', seats: '' });
     setShowAddTableModal(false);
+  };
+
+  const handleAddReservation = (e) => {
+    e.preventDefault();
+    if (!newRes.name || !newRes.time) return;
+    const res = {
+      id: Date.now(),
+      ...newRes,
+      status: 'confirmed'
+    };
+    setReservations([res, ...reservations]);
+    setNewRes({ name: '', time: '', guests: '' });
+    setShowAddResModal(false);
   };
 
 
@@ -138,36 +154,63 @@ function App() {
           <button className="secondary-btn" onClick={() => setShowAddTableModal(true)}>
             <i className="ph ph-plus"></i> Add Table
           </button>
-          <button className="primary-btn">
+          <button className="primary-btn" onClick={() => setShowAddResModal(true)}>
             <i className="ph ph-calendar-plus"></i> Add Reservation
           </button>
         </div>
       </div>
 
-      <div className="glass-panel" style={{padding: '1.5rem'}}>
-        <div className="floor-plan-header">
-          <h3>Floor Plan</h3>
-          <div className="status-legend">
-            <div className="legend-item"><span className="legend-dot"></span> Free</div>
-            <div className="legend-item"><span className="legend-dot seated"></span> Seated</div>
-            <div className="legend-item"><span className="legend-dot reserved"></span> Reserved</div>
-            <div className="legend-item"><span className="legend-dot dirty"></span> Dirty</div>
+      <div className="dashboard-grid-2-1" style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem'}}>
+        <div className="glass-panel" style={{padding: '1.5rem'}}>
+          <div className="floor-plan-header">
+            <h3>Floor Plan</h3>
+            <div className="status-legend">
+              <div className="legend-item"><span className="legend-dot"></span> Free</div>
+              <div className="legend-item"><span className="legend-dot seated"></span> Seated</div>
+              <div className="legend-item"><span className="legend-dot reserved"></span> Reserved</div>
+              <div className="legend-item"><span className="legend-dot dirty"></span> Dirty</div>
+            </div>
+          </div>
+          
+          <div className="tables-grid">
+            {tables.map(table => (
+              <div key={table.id} className={`table-card glass-panel ${table.status}`}>
+                <div className="table-number">{table.number}</div>
+                <div className="table-seats">{table.seats} Seats</div>
+                {table.occupant && (
+                  <div style={{marginTop: '0.5rem', fontWeight: '600', color: 'var(--status-danger)', fontSize: '0.85rem'}}>
+                    {table.occupant}
+                  </div>
+                )}
+                <div className="table-status-label">{table.status}</div>
+              </div>
+            ))}
           </div>
         </div>
-        
-        <div className="tables-grid">
-          {tables.map(table => (
-            <div key={table.id} className={`table-card glass-panel ${table.status}`}>
-              <div className="table-number">{table.number}</div>
-              <div className="table-seats">{table.seats} Seats</div>
-              {table.occupant && (
-                <div style={{marginTop: '0.5rem', fontWeight: '600', color: 'var(--status-danger)', fontSize: '0.85rem'}}>
-                  {table.occupant}
+
+        <div className="glass-panel" style={{padding: '1.5rem'}}>
+          <div className="panel-header">
+            <h3>Upcoming Reservations</h3>
+          </div>
+          <div className="res-list" style={{display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem'}}>
+            {reservations.length > 0 ? reservations.map(res => (
+              <div key={res.id} className="res-item-card glass-panel" style={{padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '12px'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
+                  <strong style={{fontSize: '0.9rem'}}>{res.name}</strong>
+                  <span className="status-badge ready" style={{fontSize: '0.65rem', padding: '2px 8px'}}>{res.time}</span>
                 </div>
-              )}
-              <div className="table-status-label">{table.status}</div>
-            </div>
-          ))}
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: 'var(--text-secondary)'}}>
+                  <span><i className="ph ph-users" style={{marginRight: '0.3rem'}}></i> {res.guests || '2'} Guests</span>
+                  <span style={{color: 'var(--accent-primary)', fontWeight: '700'}}>{res.status}</span>
+                </div>
+              </div>
+            )) : (
+              <div style={{textAlign: 'center', padding: '2rem', color: 'var(--text-muted)'}}>
+                <i className="ph ph-calendar-blank" style={{fontSize: '2rem', marginBottom: '0.5rem'}}></i>
+                <p style={{fontSize: '0.85rem'}}>No upcoming bookings</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -209,6 +252,58 @@ function App() {
             <button type="submit" className="primary-btn" style={{flex: 1, justifyContent: 'center'}}>Add Table</button>
           </div>
         </form>
+    </div>
+    </div>
+  );
+
+  const AddReservationModal = () => (
+    <div className="modal-overlay">
+      <div className="modal-content glass-panel">
+        <div className="modal-header">
+          <h3>New Reservation</h3>
+          <button className="modal-close" onClick={() => setShowAddResModal(false)}>
+            <i className="ph ph-x"></i>
+          </button>
+        </div>
+        <form onSubmit={handleAddReservation}>
+          <div className="form-group">
+            <label>Guest Name</label>
+            <input 
+              type="text" 
+              placeholder="e.g. Mr. Sharma" 
+              value={newRes.name} 
+              onChange={e => setNewRes({...newRes, name: e.target.value})}
+              autoFocus
+              required 
+            />
+          </div>
+          <div style={{display: 'flex', gap: '1rem'}}>
+            <div className="form-group" style={{flex: 1}}>
+              <label>Arrival Time</label>
+              <input 
+                type="time" 
+                value={newRes.time} 
+                onChange={e => setNewRes({...newRes, time: e.target.value})}
+                required 
+              />
+            </div>
+            <div className="form-group" style={{flex: 1}}>
+              <label>Party Size</label>
+              <input 
+                type="number" 
+                placeholder="4" 
+                value={newRes.guests} 
+                onChange={e => setNewRes({...newRes, guests: e.target.value})}
+                required 
+              />
+            </div>
+          </div>
+          <div style={{display: 'flex', gap: '1rem', marginTop: '2rem'}}>
+            <button type="button" className="secondary-btn" style={{flex: 1, justifyContent: 'center'}} onClick={() => setShowAddResModal(false)}>Cancel</button>
+            <button type="submit" className="primary-btn" style={{flex: 1, justifyContent: 'center'}}>Confirm Booking</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 
@@ -367,6 +462,7 @@ function App() {
         </div>
       </div>
       {showAddTableModal && <AddTableModal />}
+      {showAddResModal && <AddReservationModal />}
     </div>
   );
 }

@@ -39,27 +39,66 @@ function initApp() {
         }
     });
 
-    // Navigation
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = btn.dataset.target;
-            showView(target);
-            
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
+// Navigation
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const target = btn.dataset.target;
+        showView(target);
+        
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
     });
+});
 
-    renderLogs();
+renderLogs();
 }
 
 // View Management
-window.showView = function(viewName) {
+export function showView(viewName) {
     state.view = viewName;
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(`view-${viewName}`).classList.add('active');
+    
+    const targetView = document.getElementById(`view-${viewName}`);
+    if (targetView) {
+        targetView.classList.add('active');
+    }
+    
+    if (viewName === 'home') {
+        updateHomeView();
+    }
     
     if (viewName === 'earnings') renderLogs();
+}
+window.showView = showView;
+
+function updateHomeView() {
+    const console = document.querySelector('.idle-console');
+    const radar = console.querySelector('.radar-animation');
+    const statusText = console.querySelector('h3');
+    const subText = console.querySelector('p');
+
+    if (state.status === 'idle') {
+        radar.style.display = 'flex';
+        statusText.innerText = 'Searching for Trips...';
+        subText.innerHTML = 'Area: <strong>Ranchi Airport Zone</strong>';
+        
+        const returnBtn = console.querySelector('.return-trip-btn');
+        if (returnBtn) returnBtn.remove();
+    } else {
+        radar.style.display = 'none';
+        statusText.innerText = 'Active Trip in Progress';
+        subText.innerHTML = `Heading to: <strong>${state.activeTrip?.to || 'Destination'}</strong>`;
+        
+        // Optional: Add a "Return to Trip" button
+        if (!console.querySelector('.return-trip-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'primary-btn mt-2 return-trip-btn';
+            btn.style.maxWidth = '250px';
+            btn.innerText = 'VIEW ACTIVE TRIP';
+            btn.onclick = () => showView('trip');
+            console.appendChild(btn);
+        }
+    }
 }
 
 // Job Alert System
@@ -107,26 +146,29 @@ function startCountdown() {
     }, 1000);
 }
 
-window.acceptJob = function() {
+export function acceptJob() {
     clearInterval(state.countdownInterval);
     document.getElementById('job-alert-overlay').classList.remove('active');
     
     // Transition to Safety Checklist if first trip
     document.getElementById('safety-modal').classList.add('active');
 }
+window.acceptJob = acceptJob;
 
-window.dismissSafety = function() {
+export function dismissSafety() {
     document.getElementById('safety-modal').classList.remove('active');
     startTripFlow();
 }
+window.dismissSafety = dismissSafety;
 
-window.declineJob = function() {
+export function declineJob() {
     clearInterval(state.countdownInterval);
     document.getElementById('job-alert-overlay').classList.remove('active');
     state.status = 'idle';
     addLog('system', 'Job Declined');
     simulateIncomingJob();
 }
+window.declineJob = declineJob;
 
 // Trip Lifecycle
 function startTripFlow() {
@@ -149,7 +191,7 @@ function startTripFlow() {
     addLog('trip', `Assigned: ${state.activeTrip.to}`);
 }
 
-window.handleTripAction = function() {
+export function handleTripAction() {
     const btn = document.getElementById('trip-action-btn');
     
     if (state.status === 'pickup') {
@@ -167,6 +209,7 @@ window.handleTripAction = function() {
         completeTrip();
     }
 }
+window.handleTripAction = handleTripAction;
 
 function completeTrip() {
     const payout = 1850;
@@ -177,37 +220,43 @@ function completeTrip() {
     alert(`Trip Completed! Earnings of ₹${payout} logged to your wallet.`);
     addLog('trip', `Trip Completed - ₹${payout}`);
     
+    updateHomeView(); // Clean up home view
     showView('home');
     simulateIncomingJob();
 }
 
 // Utility Actions
-window.callParticipant = function(role) {
+export function callParticipant(role) {
     alert(`Dialing ${role}... Connecting via Secure NHPL Bridge.`);
 }
+window.callParticipant = callParticipant;
 
-window.openNav = function() {
+export function openNav() {
     alert('Launching External Navigation... Routing to Destination.');
 }
+window.openNav = openNav;
 
-window.addStop = function() {
+export function addStop() {
     const reason = prompt("Enter reason for extra stop (Traveler approval required):");
     if (reason) {
         addLog('trip', `Extra stop added: ${reason}`);
         alert('Stop added to route. Fares will be recalculated.');
     }
 }
+window.addStop = addStop;
 
-window.openChat = function() {
+export function openChat() {
     alert('Opening Group Chat (Driver, Guest, Guide)...');
 }
+window.openChat = openChat;
 
-window.confirmEndShift = function() {
+export function confirmEndShift() {
     if (confirm("Are you sure you want to end your shift? All active earnings will be finalized.")) {
         alert("Shift Ended. Great work today!");
         location.reload();
     }
 }
+window.confirmEndShift = confirmEndShift;
 
 // Logs UI
 function addLog(type, msg) {

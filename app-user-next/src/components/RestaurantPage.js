@@ -1,34 +1,44 @@
 "use client";
 import React, { useState } from 'react';
 import { APP_DATA } from '../data';
+import RestaurantBookingHero from './RestaurantBookingHero';
 
 export default function RestaurantPage({ selectedCity }) {
-  const [mode, setMode] = useState('delivery');
-  const [orderStatus, setOrderStatus] = useState(null);
+  const [mode, setMode] = useState('dine');
+  const [orderStatus, setOrderStatus] = useState({}); 
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [isBooking, setIsBooking] = useState(false);
 
   const restaurants = APP_DATA.restaurants.filter(r => r.city === selectedCity);
 
-  const handleOrder = async (res) => {
-    setOrderStatus('processing');
+  const handleOpenMenu = (res) => {
+    setSelectedRestaurant(res);
+    setIsBooking(true);
+  };
+
+  const confirmBooking = (details) => {
+    setOrderStatus(prev => ({ ...prev, [selectedRestaurant.id]: 'success' }));
+    setIsBooking(false);
+    setTimeout(() => {
+      setOrderStatus(prev => ({ ...prev, [selectedRestaurant.id]: null }));
+      setSelectedRestaurant(null);
+    }, 3000);
+  };
+
+  const handleOrder = async (res, item) => {
+    setOrderStatus(prev => ({ ...prev, [res.id]: 'processing' }));
     try {
-      const response = await fetch('/api/restaurant-orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: 1,
-          restaurant_name: res.name,
-          items: [{ name: "Signature Dish", price: 25.00 }],
-          total_amount: 25.00,
-          order_type: mode
-        })
-      });
-      if (response.ok) {
-        setOrderStatus('success');
-        setTimeout(() => setOrderStatus(null), 3000);
-      }
+      // Simulate API call
+      setTimeout(() => {
+        setOrderStatus(prev => ({ ...prev, [res.id]: 'success' }));
+        setTimeout(() => {
+          setOrderStatus(prev => ({ ...prev, [res.id]: null }));
+          setSelectedRestaurant(null);
+        }, 2000);
+      }, 1000);
     } catch (error) {
       console.error("Order failed:", error);
-      setOrderStatus('error');
+      setOrderStatus(prev => ({ ...prev, [res.id]: 'error' }));
     }
   };
 
@@ -61,20 +71,19 @@ export default function RestaurantPage({ selectedCity }) {
         </div>
       </div>
 
-      {orderStatus === 'success' && (
-        <div className="official-card" style={{background: '#eff6ff', borderColor: '#2563eb', marginBottom: '24px'}}>
-          <p style={{color: '#2563eb', fontWeight: 700, textAlign: 'center'}}>Order Confirmed.</p>
-        </div>
-      )}
-
       {restaurants.length > 0 ? (
         <div className="grid-3" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem'}}>
           {restaurants.map((res) => (
             <div key={res.id} className="official-card" style={{padding: '0', overflow: 'hidden'}}>
               <div style={{position: 'relative'}}>
                 <img src={res.image} alt={res.name} style={{width: '100%', height: '180px', objectFit: 'cover'}} />
+                {orderStatus[res.id] === 'success' && (
+                  <div style={{position: 'absolute', inset: 0, background: 'rgba(5, 150, 105, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10}}>
+                    <p style={{color: 'white', fontWeight: 800}}>ORDER PLACED</p>
+                  </div>
+                )}
                 <div style={{position: 'absolute', top: '12px', right: '12px', background: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: '4px'}}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <i className="ph-fill ph-star" style={{color: '#EAB308'}}></i>
                   {res.rating}
                 </div>
               </div>
@@ -85,10 +94,9 @@ export default function RestaurantPage({ selectedCity }) {
                   <span className="stat-label" style={{color: 'var(--accent)'}}>{mode.toUpperCase()}</span>
                   <button 
                     className="premium-action-btn"
-                    onClick={() => handleOrder(res)}
-                    disabled={orderStatus === 'processing'}
+                    onClick={() => handleOpenMenu(res)}
                   >
-                    {orderStatus === 'processing' ? 'Processing...' : 'Order'}
+                    {mode === 'dine' ? 'Reserve Table' : 'Order Now'}
                   </button>
                 </div>
               </div>
@@ -99,6 +107,14 @@ export default function RestaurantPage({ selectedCity }) {
         <div className="official-card" style={{textAlign: 'center', padding: '4rem'}}>
           <p className="text-muted">No NHPL Culinary outlets in {selectedCity} yet. We are expanding soon!</p>
         </div>
+      )}
+
+      {isBooking && selectedRestaurant && (
+        <RestaurantBookingHero 
+          restaurant={selectedRestaurant}
+          onClose={() => setIsBooking(false)}
+          onConfirm={confirmBooking}
+        />
       )}
     </div>
   );

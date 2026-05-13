@@ -226,3 +226,4 @@ build/
 .history/
 *.tmp
 *.bak
+.environment

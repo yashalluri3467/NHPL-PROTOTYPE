@@ -4,7 +4,7 @@ import { APP_DATA } from '../data';
 import RideBookingHero from './RideBookingHero';
 import LocationDetailHero from './LocationDetailHero';
 
-export default function TravelPage({ selectedCity }) {
+export default function TravelPage({ selectedCity, addBooking }) {
   const [search, setSearch] = useState('');
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -25,8 +25,11 @@ export default function TravelPage({ selectedCity }) {
   };
 
   const confirmBooking = (details) => {
-    console.log("Booking Confirmed:", details);
-    alert(`Ride Request Sent to ${selectedDriver.name}!\nTotal Estimate: ₹${details.total}`);
+    addBooking({
+      type: 'Travel',
+      title: `Chauffeur Service: ${selectedDriver.name}`,
+      price: `₹${details.total}`
+    });
     setSelectedDriver(null);
   };
 
@@ -70,36 +73,7 @@ export default function TravelPage({ selectedCity }) {
         </div>
       </div>
 
-      <div style={{marginBottom: '2.5rem'}}>
-        <h3 style={{marginBottom: '1rem'}}>Certified NHPL Chauffeurs in {selectedCity}</h3>
-        <div className="discovery-gallery">
-          {APP_DATA.drivers.filter(d => d.city === selectedCity).map(driver => (
-            <div key={driver.id} className="official-card" style={{padding: '1.25rem'}}>
-              <div style={{display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem'}}>
-                <div className="user-avatar" style={{width: '45px', height: '45px', fontSize: '1rem', background: 'var(--accent-bg)', color: 'var(--accent)'}}>
-                  {driver.name[0]}
-                </div>
-                <div>
-                  <h4 style={{margin: 0}}>{driver.name}</h4>
-                  <p className="text-muted" style={{fontSize: '0.75rem'}}>{driver.car}</p>
-                </div>
-              </div>
-              <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '1rem'}}>
-                <span>Rating: <b>{driver.rating}</b></span>
-                <span><b>{driver.trips}</b> Trips</span>
-              </div>
-              <button 
-                className="premium-action-btn" 
-                style={{width: '100%', padding: '6px', fontSize: '0.75rem'}}
-                onClick={() => handleBookClick(driver)}
-              >
-                Book Ride
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
+      {/* 1. Available Near You (Visual Gallery) */}
       <div style={{marginBottom: '2.5rem'}}>
         <h3 style={{marginBottom: '1rem'}}>Available Near You</h3>
         <div className="discovery-gallery">
@@ -119,7 +93,8 @@ export default function TravelPage({ selectedCity }) {
         </div>
       </div>
 
-      <div className="official-card" style={{padding: '0'}}>
+      {/* 2. Detailed Spots (Table) */}
+      <div className="official-card" style={{padding: '0', marginBottom: '2.5rem'}}>
         <div style={{padding: '1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <h3 style={{margin:0}}>Detailed Spots in {selectedCity}</h3>
           <div style={{position: 'relative'}}>
@@ -161,6 +136,37 @@ export default function TravelPage({ selectedCity }) {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* 3. Certified NHPL Chauffeurs (Driver List) */}
+      <div style={{marginBottom: '2.5rem'}}>
+        <h3 style={{marginBottom: '1rem'}}>Certified NHPL Chauffeurs in {selectedCity}</h3>
+        <div className="discovery-gallery">
+          {APP_DATA.drivers.filter(d => d.city === selectedCity).map(driver => (
+            <div key={driver.id} className="official-card" style={{padding: '1.25rem'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem'}}>
+                <div className="user-avatar" style={{width: '45px', height: '45px', fontSize: '1rem', background: 'var(--accent-bg)', color: 'var(--accent)'}}>
+                  {driver.name[0]}
+                </div>
+                <div>
+                  <h4 style={{margin: 0}}>{driver.name}</h4>
+                  <p className="text-muted" style={{fontSize: '0.75rem'}}>{driver.car}</p>
+                </div>
+              </div>
+              <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '1rem'}}>
+                <span>Rating: <b>{driver.rating}</b></span>
+                <span><b>{driver.trips}</b> Trips</span>
+              </div>
+              <button 
+                className="premium-action-btn" 
+                style={{width: '100%', padding: '6px', fontSize: '0.75rem'}}
+                onClick={() => handleBookClick(driver)}
+              >
+                Book Ride
+              </button>
+            </div>
+          ))}
         </div>
       </div>
 

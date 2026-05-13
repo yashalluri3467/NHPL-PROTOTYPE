@@ -39,18 +39,18 @@ function initApp() {
         }
     });
 
-// Navigation
-document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const target = btn.dataset.target;
-        showView(target);
-        
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    // Navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.target;
+            showView(target);
+            
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
     });
-});
 
-renderLogs();
+    renderLogs();
 }
 
 // View Management
@@ -220,7 +220,6 @@ function completeTrip() {
     alert(`Trip Completed! Earnings of ₹${payout} logged to your wallet.`);
     addLog('trip', `Trip Completed - ₹${payout}`);
     
-    updateHomeView(); // Clean up home view
     showView('home');
     simulateIncomingJob();
 }

@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 
-export default function RestaurantBookingHero({ restaurant, onClose, onConfirm }) {
-  const [step, setStep] = useState('reserve'); // 'reserve' | 'menu' | 'full'
+export default function RestaurantBookingHero({ restaurant, onClose, onConfirm, mode = 'dine' }) {
+  const [step, setStep] = useState(mode === 'dine' ? 'reserve' : 'details'); // 'reserve' | 'details' | 'menu' | 'full'
   const [formData, setFormData] = useState({
     name: 'Alex Johnson',
     phone: '+91 98765 43210',
@@ -12,16 +12,16 @@ export default function RestaurantBookingHero({ restaurant, onClose, onConfirm }
   const [cart, setCart] = useState([]);
   const [isChecking, setIsChecking] = useState(false);
 
-  const handleReserve = () => {
+  const handleNext = () => {
     setIsChecking(true);
     setTimeout(() => {
       setIsChecking(false);
-      if (formData.persons > 8) {
+      if (mode === 'dine' && formData.persons > 8) {
         setStep('full');
       } else {
         setStep('menu');
       }
-    }, 1500);
+    }, 1200);
   };
 
   const toggleCartItem = (item) => {
@@ -56,13 +56,13 @@ export default function RestaurantBookingHero({ restaurant, onClose, onConfirm }
         </div>
 
         <div className="hero-body">
-          {step === 'reserve' && (
+          {(step === 'reserve' || step === 'details') && (
             <div className="reservation-form">
               <div className="form-title">
-                <i className="ph ph-calendar-check"></i>
+                <i className={`ph ${mode === 'dine' ? 'ph-calendar-check' : 'ph-user-list'}`}></i>
                 <div>
-                  <h4>Secure Your Table</h4>
-                  <p>Check real-time availability for your party</p>
+                  <h4>{mode === 'dine' ? 'Secure Your Table' : 'Contact Information'}</h4>
+                  <p>{mode === 'dine' ? 'Check real-time availability' : 'Required for order tracking'}</p>
                 </div>
               </div>
 
@@ -79,22 +79,25 @@ export default function RestaurantBookingHero({ restaurant, onClose, onConfirm }
                   <label>Email Address</label>
                   <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
-                <div className="input-group full">
-                  <label>Number of Persons</label>
-                  <div className="persons-selector">
-                    {[1, 2, 3, 4, 5, 6, 8, 10].map(n => (
-                      <button 
-                        key={n} 
-                        className={formData.persons === n ? 'active' : ''}
-                        onClick={() => setFormData({...formData, persons: n})}
-                      >{n}</button>
-                    ))}
+                
+                {mode === 'dine' && (
+                  <div className="input-group full">
+                    <label>Number of Persons</label>
+                    <div className="persons-selector">
+                      {[1, 2, 3, 4, 5, 6, 8, 10].map(n => (
+                        <button 
+                          key={n} 
+                          className={formData.persons === n ? 'active' : ''}
+                          onClick={() => setFormData({...formData, persons: n})}
+                        >{n}</button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
-              <button className="primary-action-btn mt-2" onClick={handleReserve} disabled={isChecking}>
-                {isChecking ? 'Checking Availability...' : 'CHECK CAPACITY & RESERVE'}
+              <button className="primary-action-btn mt-2" onClick={handleNext} disabled={isChecking}>
+                {isChecking ? 'Processing...' : (mode === 'dine' ? 'CHECK CAPACITY & RESERVE' : 'CONTINUE TO MENU')}
               </button>
             </div>
           )}
@@ -104,8 +107,8 @@ export default function RestaurantBookingHero({ restaurant, onClose, onConfirm }
               <div className="form-title">
                 <i className="ph ph-shopping-bag-open"></i>
                 <div>
-                  <h4>Table Reserved!</h4>
-                  <p>Pre-order from the menu to save time</p>
+                  <h4>{mode === 'dine' ? 'Table Reserved!' : 'Select Your Items'}</h4>
+                  <p>{mode === 'dine' ? 'Pre-order from the menu to save time' : 'Add your favorites to the cart'}</p>
                 </div>
               </div>
 
@@ -124,8 +127,8 @@ export default function RestaurantBookingHero({ restaurant, onClose, onConfirm }
                 ))}
               </div>
 
-              <button className="primary-action-btn mt-2" onClick={() => onConfirm({ formData, cart, total })}>
-                CONFIRM RESERVATION & ORDER
+              <button className="primary-action-btn mt-2" onClick={() => onConfirm({ formData, cart, total, mode })}>
+                {mode === 'dine' ? 'CONFIRM RESERVATION & ORDER' : `BOOK ${mode.toUpperCase()} ORDER`}
               </button>
             </div>
           )}
@@ -134,7 +137,7 @@ export default function RestaurantBookingHero({ restaurant, onClose, onConfirm }
             <div className="capacity-error">
               <div className="error-icon"><i className="ph-fill ph-warning-octagon"></i></div>
               <h3>Restaurant at Capacity</h3>
-              <p>We're sorry, {restaurant.name} cannot accommodate a party of {formData.persons} at this time. Please try a smaller group or choose another outlet.</p>
+              <p>We're sorry, {restaurant.name} cannot accommodate a party of {formData.persons} at this time.</p>
               <button className="secondary-action-btn mt-2" onClick={() => setStep('reserve')}>TRY AGAIN</button>
             </div>
           )}

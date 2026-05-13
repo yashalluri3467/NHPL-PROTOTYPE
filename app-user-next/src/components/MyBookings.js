@@ -1,12 +1,7 @@
 "use client";
 import React from 'react';
 
-export default function MyBookings() {
-  const bookings = [
-    { id: 'BK001', type: 'Travel', title: 'Pickup from Ranchi Airport', date: 'Oct 24, 2024', status: 'Upcoming', price: '$45.00' },
-    { id: 'BK002', type: 'Hotel', title: 'NHPL Grand Luxury Ranchi', date: 'Oct 24-25, 2024', status: 'Confirmed', price: '$180.00' },
-    { id: 'BK003', type: 'Dining', title: 'Saffron Restaurant', date: 'Oct 24, 2024 (20:00)', status: 'Upcoming', price: '$65.50' }
-  ];
+export default function MyBookings({ bookings = [] }) {
 
   return (
     <div className="bookings-page">

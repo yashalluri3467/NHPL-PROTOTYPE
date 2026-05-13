@@ -2,12 +2,14 @@
 import React, { useState } from 'react';
 import { APP_DATA } from '../data';
 import RestaurantBookingHero from './RestaurantBookingHero';
+import OrderTracker from './OrderTracker';
 
-export default function RestaurantPage({ selectedCity }) {
+export default function RestaurantPage({ selectedCity, addBooking }) {
   const [mode, setMode] = useState('dine');
   const [orderStatus, setOrderStatus] = useState({}); 
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [isBooking, setIsBooking] = useState(false);
+  const [activeOrder, setActiveOrder] = useState(null);
 
   const restaurants = APP_DATA.restaurants.filter(r => r.city === selectedCity);
 
@@ -19,9 +21,25 @@ export default function RestaurantPage({ selectedCity }) {
   const confirmBooking = (details) => {
     setOrderStatus(prev => ({ ...prev, [selectedRestaurant.id]: 'success' }));
     setIsBooking(false);
+
+    const price = details.total ? `₹${(details.total * 85).toLocaleString()}` : 'TBD';
+    
+    addBooking({
+      type: mode === 'dine' ? 'Dining' : 'Takeaway',
+      title: `${selectedRestaurant.name} - ${mode.toUpperCase()}`,
+      price: price
+    });
+    
+    if (mode === 'takeaway' || mode === 'delivery') {
+      setActiveOrder({
+        restaurantName: selectedRestaurant.name,
+        details: details
+      });
+    }
+
     setTimeout(() => {
       setOrderStatus(prev => ({ ...prev, [selectedRestaurant.id]: null }));
-      setSelectedRestaurant(null);
+      if (mode === 'dine') setSelectedRestaurant(null);
     }, 3000);
   };
 
@@ -109,11 +127,24 @@ export default function RestaurantPage({ selectedCity }) {
         </div>
       )}
 
+      {activeOrder && (
+        <div style={{marginTop: '3rem', maxWidth: '600px', marginInline: 'auto'}}>
+          <OrderTracker 
+            order={activeOrder} 
+            onComplete={() => {
+              setActiveOrder(null);
+              setSelectedRestaurant(null);
+            }} 
+          />
+        </div>
+      )}
+
       {isBooking && selectedRestaurant && (
         <RestaurantBookingHero 
           restaurant={selectedRestaurant}
           onClose={() => setIsBooking(false)}
           onConfirm={confirmBooking}
+          mode={mode}
         />
       )}
     </div>

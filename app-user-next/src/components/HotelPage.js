@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { APP_DATA } from '../data';
 import HotelBookingHero from './HotelBookingHero';
 
-export default function HotelPage({ selectedCity }) {
+export default function HotelPage({ selectedCity, addBooking }) {
   const [bookingStatus, setBookingStatus] = useState({}); 
   const [selectedHotel, setSelectedHotel] = useState(null);
   const [isBooking, setIsBooking] = useState(false);
@@ -18,6 +18,13 @@ export default function HotelPage({ selectedCity }) {
   const confirmBooking = (details) => {
     setBookingStatus(prev => ({ ...prev, [selectedHotel.id]: 'success' }));
     setIsBooking(false);
+
+    addBooking({
+      type: 'Hotel',
+      title: `Stay at ${selectedHotel.name}`,
+      price: selectedHotel.price
+    });
+
     setTimeout(() => {
       setBookingStatus(prev => ({ ...prev, [selectedHotel.id]: null }));
       setSelectedHotel(null);
